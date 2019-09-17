@@ -1,0 +1,81 @@
+{
+  "resourceType": "Condition",
+  "id": "22804",
+  "meta": {
+    "versionId": "2",
+    "lastUpdated": "2019-09-09T19:00:49.281+00:00",
+    "source": "#884cf2563369575d"
+  },
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Rheumatoid Arthritis</div>"
+  },
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "14657009",
+          "display": "Diagnosis"
+        }
+      ],
+      "text": "Diagnosis"
+    }
+  ],
+  "severity": {
+    "coding": [
+      {
+        "system": "http://snomed.info/ct",
+        "code": "6736007",
+        "display": "moderate"
+      }
+    ],
+    "text": "Moderate"
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "code": "T36.5X5",
+        "display": "Adverse effect of aminoglycosides"
+      }
+    ],
+    "text": "Adverse effect of aminoglycosides"
+  },
+  "bodySite": [
+    {
+      "coding": [
+        {
+          "system": "http://snomed.info/ct",
+          "code": "12861001",
+          "display": "both hands"
+        }
+      ],
+      "text": "both hands"
+    }
+  ],
+  "subject": {
+    "reference": "Patient/14518"
+  },
+  "onsetAge": {
+    "value": 72,
+    "system": "http://unitsofmeasure.org",
+    "code": "a"
+  },
+  "evidence": [
+    {
+      "code": [
+        {
+          "coding": [
+            {
+              "system": "http://snomed.info/ct",
+              "code": "57676002",
+              "display": "Painful Joint"
+            }
+          ],
+          "text": "Painful joint"
+        }
+      ]
+    }
+  ]
+}

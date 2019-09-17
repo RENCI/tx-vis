@@ -1,0 +1,53 @@
+{
+  "resourceType": "Condition",
+  "id": "22799",
+  "meta": {
+    "versionId": "2",
+    "lastUpdated": "2019-09-09T19:05:42.196+00:00",
+    "source": "#f25d708c7868daed"
+  },
+  "text": {
+    "status": "generated",
+    "div": "<div xmlns=\"http://www.w3.org/1999/xhtml\">Asthma</div>"
+  },
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://snomed.info/sct",
+          "code": "14657009",
+          "display": "Diagnosis"
+        }
+      ],
+      "text": "Diagnosis"
+    }
+  ],
+  "severity": {
+    "coding": [
+      {
+        "system": "http://snomed.info/ct",
+        "code": "6736007",
+        "display": "mild to moderate"
+      }
+    ],
+    "text": "mild to moderate"
+  },
+  "code": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10",
+        "code": "H31.3",
+        "display": "Choroidal hemorrhage and rupture"
+      }
+    ],
+    "text": "Choroidal hemorrhage and rupture"
+  },
+  "subject": {
+    "reference": "Patient/12250"
+  },
+  "onsetAge": {
+    "value": 14,
+    "system": "http://unitsofmeasure.org",
+    "code": "a"
+  }
+}

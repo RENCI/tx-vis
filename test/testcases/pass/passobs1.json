@@ -1,0 +1,38 @@
+{
+  "resourceType": "Observation",
+  "id": "3535",
+  "meta": {
+    "versionId": "9",
+    "lastUpdated": "2019-05-22T17:24:32.244+00:00"
+  },
+  "status": "final",
+  "category": [
+    {
+      "coding": [
+        {
+          "system": "http://hl7.org/fhir/observation-category",
+          "code": "vital-signs",
+          "display": "Vital Signs"
+        }
+      ]
+    }
+  ],
+  "code": {
+    "coding": [
+      {
+        "system": "http://loinc.org",
+        "code": "7867677-4",
+        "display": "Heart rate"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/3533"
+  },
+  "valueQuantity": {
+    "value": 122,
+    "unit": "beats/minute",
+    "system": "http://unitsofmeasure.org",
+    "code": "/min"
+  }
+}
