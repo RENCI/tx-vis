@@ -11,7 +11,6 @@ def lookupFHIR(input_dir, patient_id, codes): # 'codes' parameter is a list of [
     for root, _, fnames in os.walk(input_dir, topdown=True):
         for f in fnames:
             resc = loadFHIR(os.path.join(root, f))
-
             for c in codes:  
                 system = c["system"]
                 code = c["code"]
@@ -28,10 +27,10 @@ def lookupFHIR(input_dir, patient_id, codes): # 'codes' parameter is a list of [
                     for c2 in resc["code"]["coding"]: # compares system and diagnosis codes
                         if c2["system"] == system and c2["code"] == code:  
                             for p in patient_id: # compares patient_ids
-                                pid = subject[reference].split("/")
+                                pid = resc["subject"]["reference"].split("/")
                                 if p == pid[1]:
                                     records.append(resc)
-                            
+                                    return records                            
                     
                 
     
