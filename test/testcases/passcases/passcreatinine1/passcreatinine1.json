@@ -29,11 +29,6 @@
         "system": "http://loinc.org",
         "code": "2160-0",
         "display": "Creatinine [Mass/volume] in Serum or Plasma"
-      },
-      {
-        "system": "urn:iso:std:iso:11073:10101",
-        "code": "2160-0",
-        "display": "MDC_PULS_OXIM_SAT_O2"
       }
     ]
   },
