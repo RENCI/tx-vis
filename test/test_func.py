@@ -1,4 +1,5 @@
 from pdsphenotypemapping import dispatcher
+import requests
 
 def test_func_pc1():
 
@@ -77,6 +78,19 @@ def test_func_fc2():
     assert arraylen!=0
 
 
+json_headers = {
+    "Content-Type": "application/json"
+}
 
-
+import time
+def test_api():
+    result=requests.post("http://pdsphenotypemapping:8080/mapping", json={
+        "input_dir": "test/testcases/passcases/passcond1",
+        "patient_id": "17944",
+        "codes": [{"system":"http://hl7.org/fhir/sid/icd-10-cm", "code":"C50.021"}]
+    }, headers=json_headers)
+    assert result.status_code == 200
+    arraylen=len(result.json())
+    assert arraylen!=0
+    
       
