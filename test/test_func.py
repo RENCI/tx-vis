@@ -60,22 +60,22 @@ def test_func_fo1():
 
     result=dispatcher.lookupFHIR("test/testcases/passcases/failobs1", "55708", [{"system":"http://loinc.org", "code":"2160-0"}])
     arraylen=len(result)
-    assert arraylen!=0
+    assert arraylen==0
 def test_func_fo2():
 
     result=dispatcher.lookupFHIR("test/testcases/passcases/failobs2", "14", [{"system":"http://loinc.org", "code":"2160-0"}])
     arraylen=len(result)
-    assert arraylen!=0
+    assert arraylen==0
 def test_func_fc1():
 
     result=dispatcher.lookupFHIR("test/testcases/passcases/failcond1", "13429", [{"system":"http://loinc.org", "code":"2160-0"}])
     arraylen=len(result)
-    assert arraylen!=0
+    assert arraylen==0
 def test_func_fc2():
 
     result=dispatcher.lookupFHIR("test/testcases/passcases/failcond2", "14", [{"system":"http://loinc.org", "code":"2160-0"}])
     arraylen=len(result)
-    assert arraylen!=0
+    assert arraylen==0
 
 
 json_headers = {
