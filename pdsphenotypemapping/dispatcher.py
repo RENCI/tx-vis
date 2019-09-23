@@ -1,5 +1,5 @@
 import json
-import os 
+import os
 
 # function for loading patient record file(s)
 

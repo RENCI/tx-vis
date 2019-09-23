@@ -1,0 +1,16 @@
+version: '3.4'
+services:
+  
+  pdsphenotypemapping:
+    build:
+      context: .
+      target: base
+    restart: always
+    environment:
+      INPUT_ROOT: /data
+    volumes:
+      - $INPUT_ROOT:/data
+    ports:
+      - $PDSPHENOTYPEMAPPING_PORT:8080
+
+    

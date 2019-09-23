@@ -1,0 +1,17 @@
+version: '3.4'
+services:
+  
+  pdsphenotypemapping-test:
+    build:
+      context: .
+      target: test
+    environment:
+      INPUT_ROOT: /data
+    volumes:
+      - $INPUT_ROOT:/data
+    depends_on:
+      - pdsphenotypemapping
+
+
+    
+    

@@ -1,0 +1,62 @@
+openapi: 3.0.0
+info:
+  description: 
+    This is a pds-phenotype-mapping-plugin.  You can find
+    out more about Swagger at
+    [http://swagger.io](http://swagger.io) or on
+    [irc.freenode.net, #swagger](http://swagger.io/irc/).
+  version: "1.0.0"
+  title: pds-phenotype-mapping-plugin
+  license:
+    name: MIT
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+tags:
+  - name: patient
+    description: Patient information
+    externalDocs:
+      description: Find out more
+      url: 'http://swagger.io'
+paths:
+  /mapping:
+    post:
+      summary: Add patient record directory, patient_id, system and diagnosis code
+      operationId: api.mapping
+      responses: # has to match output of dispatcher.py
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  type: object
+        '405':
+          description: Invalid input
+      requestBody: # has to match input arguments of dispatcher.py
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                input_dir:
+                  type: string
+                  example: "test/testcases/passcases/passcond1"
+                patient_id:
+                  type: string
+                  example: "66" 
+                codes:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Codes'
+components:
+  schemas:
+    Codes:
+      type: object
+      properties:
+        system:
+          type: string
+          format: uri
+          example: "http://hl7.org/fhir/sid/icd-10"
+        code:
+          type: string
+          example: "H31.3"
