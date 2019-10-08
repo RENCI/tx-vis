@@ -17,10 +17,10 @@ tags:
       description: Find out more
       url: 'http://swagger.io'
 paths:
-  /mapping:
+  /low_level_mapping:
     post:
       summary: Add patient record directory, patient_id, system and diagnosis code
-      operationId: api.mapping
+      operationId: api.low_level_mapping
       responses: # has to match output of dispatcher.py
         '200':
           description: Successful operation
@@ -48,6 +48,35 @@ paths:
                   type: array
                   items:
                     $ref: '#/components/schemas/Codes'
+  /lower_level_mapping:
+    post:
+      summary: Add patient record directory, patient_id, system and diagnosis code
+      operationId: api.mapping
+      responses: # has to match output of dispatcher.py
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items: 
+                  type: object
+        '405':
+          description: Invalid input
+      requestBody: # has to match input arguments of dispatcher.py
+        content: 
+          application/json:
+            schema:
+              type: object
+              properties:
+                input_dir:
+                  type: string
+                  example: "test/testcases/passcases/passcond1"
+                patient_id:
+                  type: string
+                  example: "66" 
+                clinical:
+                  type: string
 components:
   schemas:
     Codes:
@@ -60,3 +89,5 @@ components:
         code:
           type: string
           example: "H31.3"
+        is_regex:
+          type: boolean

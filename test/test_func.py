@@ -82,7 +82,6 @@ json_headers = {
     "Content-Type": "application/json"
 }
 
-import time
 def test_api():
     result=requests.post("http://pdsphenotypemapping:8080/mapping", json={
         "input_dir": "test/testcases/passcases/passcond1",
