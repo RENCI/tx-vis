@@ -32,7 +32,7 @@ def lookupClinical(input_dir, patient_id, clinical):
         records=lookupPatient(input_dir,patient_id)
         patient=patientNumber(records)
         return list(map(lambda a: a["valueCodeableConcept"],filter(lambda x: x["url"]=="http://hl7.org/fhir/StructureDefinition/us-core-race",patient["extension"])))
-     if clinical=="ethnicity":
+    if clinical=="ethnicity":
         records=lookupPatient(input_dir,patient_id)
         patient=patientNumber(records)
         return list(map(lambda a: a["valueCodeableConcept"],filter(lambda x: x["url"]=="http://hl7.org/fhir/StructureDefinition/us-core-ethnicity",patient["extension"])))
