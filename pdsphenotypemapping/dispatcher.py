@@ -1,6 +1,7 @@
 import json
 import os
 import re
+from clinical_feature import mapping
 
 # Function for loading patient record file(s)
 
@@ -528,7 +529,9 @@ def lookupPatient(input_dir,patient_id):
                     records.append(resc)
     return records
             
-def lookupFHIR(input_dir, patient_id, codes): # 'codes' parameter is a list of [{"system":"", "code":""}]
+def lookupFHIR(input_dir, patient_id, clinical_query): # 'codes' parameter is an object of the form {"codes":[{"system":"", "code":"","is_regex":"","certitude":""}],"unavailable":{"certitude":""}}
+    codes=clinical_query["codes"]
+    unavailable=clinical_query["unavailable"]
     records = []
     for root, _, fnames in os.walk(input_dir, topdown=True):
         for f in fnames:
@@ -536,6 +539,7 @@ def lookupFHIR(input_dir, patient_id, codes): # 'codes' parameter is a list of [
             for c in codes:  
                 system = c["system"]
                 code = c["code"]
+                certitude = c["certitude"]
                 if system == "http://loinc.org":
                     resc_type = "Observation"
                     print ("Observation")
@@ -568,12 +572,15 @@ def lookupFHIR(input_dir, patient_id, codes): # 'codes' parameter is a list of [
                                 if is_regex:
                                     if re.search(code, c2["code"]):
                                         print ("System and diagnosis code matched")                        
-                                        records.append(resc)
+                                        records.append({"record":resc,"certitude":certitude})
                                 else:
                                     if c2["code"] == code:
                                         print ("System and diagnosis code matched")
-                                        records.append(resc)
-    return records                            
+                                        records.append({"record":resc,"certitude":certitude})
+    if len(records)==0:
+        return {"status":"unavailable","certitude":{unavailable["certitude"]}}
+    else:
+        return {"status":"available","records":records,"certitude":max(map(lambda a:a["certitude"],records))}                   
                       
                     
                 
