@@ -20,6 +20,7 @@ def patientNumber(records):
 # Function that returns patient's demographic and clinical feature data
 
 def lookupClinical(input_dir, patient_id, clinical):
+    # calculate age using utc time and assume birth date is in UTC
     if clinical=="birth date":
          records=lookupPatient(input_dir,patient_id)
          patient=patientNumber(records)
@@ -32,23 +33,26 @@ def lookupClinical(input_dir, patient_id, clinical):
         records=lookupPatient(input_dir,patient_id)
         patient=patientNumber(records)
         return list(map(lambda a: a["valueCodeableConcept"],filter(lambda x: x["url"]=="http://hl7.org/fhir/StructureDefinition/us-core-race",patient["extension"])))
-     if clinical=="ethnicity":
+    if clinical=="ethnicity":
         records=lookupPatient(input_dir,patient_id)
         patient=patientNumber(records)
         return list(map(lambda a: a["valueCodeableConcept"],filter(lambda x: x["url"]=="http://hl7.org/fhir/StructureDefinition/us-core-ethnicity",patient["extension"])))
+    # add weight, height, bmi
+    
+    # add loinc passthrough
     
     mpg={
-        "serum creatinine":[{
+        "2160-0":[{ # serum creatinine
             "system":"http://loinc.org",
             "code":"2160-0",
             "is_regex":False
             }],
-        "pregnancy":[{
+        "82810-3":[{ # pregnancy
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
             "code":"^Z34\\.",
             "is_regex":True
             }],
-        "bleeding":[{
+        "HP:0001892":[{ # bleeding
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
             "code":"^I60\\.",
             "is_regex":True
@@ -298,7 +302,7 @@ def lookupClinical(input_dir, patient_id, clinical):
             "code":"^R58\\.",
             "is_regex":True            
             }],
-        "kidney dysfunction":[{
+        "HP:0000077":[{ # kidney dysfunction
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
             "code":"^N00\\.",
             "is_regex":True 
