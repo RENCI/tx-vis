@@ -2,6 +2,7 @@ from .utils import tstostr, strtots, unbundle, strtodate
 from datetime import datetime, date
 import os
 import requests
+import re
 
 
 pdsdpi_host = os.environ["PDSDPI_HOST"]
@@ -12,32 +13,65 @@ pdsdpi_url_base = f"http://{pdsdpi_host}:{pdsdpi_port}"
 
 
 def query_records(records, codes, timestamp):
+    if records == None:
+        return {
+            "value": None,
+            "certitude": 0,
+            "calculation": "no record found"
+        }
+
     def calculation(codes):
         return "from " + ",".join(list(map(lambda a: a["system"] + " " + a["code"], codes)))
+
+    def extract_key(a):
+        if "effectiveInstant" in a:
+            return a["effectiveInstant"]
+        if "onsetDateTime" in a:
+            return a["onsetDateTime"]
+        return None
+    
     records_filtered = []
     for record in records:
         for c in codes:  
             system = c["system"]
             code = c["code"]
-            certitude = c["certitude"]
+            is_regex = c["is_regex"]
             
-            for c2 in resc["code"]["coding"]: 
+            for c2 in record["code"]["coding"]: 
                 if c2["system"] == system:
                     if (is_regex and re.search(code, "^" + c2["code"] + "$")) or c2["code"] == code:
-                        records_filtered.append(resc)
-    if len(records_filtered == 0):
+                        records_filtered.append(record)
+    if len(records_filtered) == 0:
         return {
-            "value": "unset",
+            "value": None,
             "certitude": 0,
             "calculation": calculation(codes) 
         }
     else:
         ts = strtots(timestamp)
-        record = min(records_filtered, key = lambda a: abs(strtots(a["effectiveInstant"]) - ts))
+        def key(a):
+            ext_key = extract_key(a)
+            if ext_key is None:
+                return float("inf")
+            else:
+                return abs(strtots(ext_key) - ts)
+        record = min(records_filtered, key = key)
+        keyr = extract_key(record)
+        c = calculation(record["code"]["coding"])
+        if keyr is None:
+            c += " at notimestamp"
+            cert = 1
+        else:
+            c += " at " + extract_key(record)
+            cert = 2
+        if "valueQuantity" in record:
+            v = record["valueQuantity"]
+        else:
+            v = []
         return {
-            "value": record["valueQuantity"],
-            "certitude": 2,
-            "calculation": calculation(record["code"]["coding"]) + " at " + record["effectiveInstant"]
+            "value": v,
+            "certitude": cert,
+            "calculation": c
         }
     
 
@@ -69,7 +103,7 @@ def height(patient_id, timestamp):
     records = get_observation(patient_id)
     if records == None:
         return {
-            "value": null,
+            "value": None,
             "certitude": 0,
             "calculation": "record not found"            
         }
@@ -87,7 +121,7 @@ def weight(patient_id, timestamp):
     records = get_observation(patient_id)
     if records == None:
         return {
-            "value": null,
+            "value": None,
             "certitude": 0,
             "calculation": "record not found"            
         }
@@ -105,7 +139,7 @@ def bmi(patient_id, timestamp):
     records = get_observation(patient_id)
     if records == None:
         return {
-            "value": null,
+            "value": None,
             "certitude": 0,
             "calculation": "record not found"            
         }
@@ -128,7 +162,7 @@ def age(patient_id, timestamp):
     patient = get_patient(patient_id)
     if patient == None:
         return {
-            "value": null,
+            "value": None,
             "certitude": 0,
             "calculation": "record not found"            
         }
@@ -144,7 +178,7 @@ def age(patient_id, timestamp):
             }
         else:
             return {
-                "value": null,
+                "value": None,
                 "certitude": 0,
                 "calculation": "birthDate not set"
             }
@@ -154,7 +188,7 @@ def gender(patient_id, timestamp):
     patient = get_patient(patient_id)
     if patient == None:
         return {
-            "value": null,
+            "value": None,
             "certitude": 0,
             "calculation": "record not found"            
         }
@@ -170,7 +204,7 @@ def race(patient_id, timestamp):
     patient = get_patient(patient_id)
     if patient == None:
         return {
-            "value": null,
+            "value": None,
             "certitude": 0,
             "calculation": "record not found"            
         }
@@ -186,7 +220,7 @@ def ethnicity(patient_id, timestamp):
     patient = get_patient(patient_id)
     if patient == None:
         return {
-            "value": null,
+            "value": None,
             "certitude": 0,
             "calculation": "record not found"            
         }
@@ -222,17 +256,17 @@ def bleeding(patient_id, timestamp):
     return query_records(get_condition(patient_id), [
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^I60\\.",
+            "code":"I60\\..*",
             "is_regex":True 
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^I61\\.",
+            "code":"I61\\..*",
             "is_regex":True
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^I62\\.",
+            "code":"I62\\..*",
             "is_regex":True
         },
         {
@@ -467,7 +501,7 @@ def bleeding(patient_id, timestamp):
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^R58\\.",
+            "code":"R58\\..*",
             "is_regex":True,
         }
     ], timestamp)
@@ -477,25 +511,25 @@ def kidney_dysfunction(patient_id, timestamp):
     query_records(get_condition(patient_id), [
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N00\\.",
+            "code":"N00\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N10\\.",
+            "code":"N10\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N17\\.",
+            "code":"N17\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N14\\.",
+            "code":"N14\\..*",
             "is_regex":True,
 	    
         },
@@ -549,13 +583,13 @@ def kidney_dysfunction(patient_id, timestamp):
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^I12\\.",
+            "code":"I12\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^I13\\.",
+            "code":"I13\\..*",
             "is_regex":True,
 	    
         },
@@ -573,145 +607,145 @@ def kidney_dysfunction(patient_id, timestamp):
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N01\\.",
+            "code":"N01\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N02\\.",
+            "code":"N02\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N03\\.",
+            "code":"N03\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N04\\.",
+            "code":"N04\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N05\\.",
+            "code":"N05\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N06\\.",
+            "code":"N06\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N07\\.",
+            "code":"N07\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N08\\.",
+            "code":"N08\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N11\\.",
+            "code":"N11\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N13\\.",
+            "code":"N13\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N15\\.",
+            "code":"N15\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N16\\.",
+            "code":"N16\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N18\\.",
+            "code":"N18\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N19\\.",
+            "code":"N19\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N25\\.",
+            "code":"N25\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N26\\.",
+            "code":"N26\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N27\\.",
+            "code":"N27\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N28\\.",
+            "code":"N28\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N29\\.",
+            "code":"N29\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^Q60\\.",
+            "code":"Q60\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^Q61\\.",
+            "code":"Q61\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^Q62\\.",
+            "code":"Q62\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^Q63\\.",
+            "code":"Q63\\..*",
             "is_regex":True,
 	    
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^Z49\\.",
+            "code":"Z49\\..*",
             "is_regex":True,
 	    
         },
@@ -723,7 +757,7 @@ def kidney_dysfunction(patient_id, timestamp):
         },
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
-            "code":"^N12\\.",
+            "code":"N12\\..*",
             "is_regex":True,
 	    
         }

@@ -4,6 +4,7 @@ services:
   pdsphenotypemapping-test:
     build:
       context: test
+    command: ["-s", "-vv"]
     depends_on:
       - pdsphenotypemapping
       - pdsphenotypemapping-test-fhir-server
