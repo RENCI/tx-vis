@@ -3,14 +3,11 @@ services:
   
   pdsphenotypemapping-test:
     build:
-      context: .
-      target: test
-    environment:
-      INPUT_ROOT: /data
-    volumes:
-      - $INPUT_ROOT:/data
+      context: test
     depends_on:
       - pdsphenotypemapping
+      - pdsphenotypemapping-test-fhir-server
+
 
 
     

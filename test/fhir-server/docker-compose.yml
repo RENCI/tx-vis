@@ -1,0 +1,10 @@
+version: '3.4'
+services:
+  
+  pdsphenotypemapping-test-fhir-server:
+    build:
+      context: test/fhir-server
+    expose:
+      - 8080
+
+    
