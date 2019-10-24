@@ -6,8 +6,8 @@ services:
       context: .
     restart: always
     environment:
-      PDSDPI_HOST: $PDSDPI_HOST
-      PDSDPI_PORT: $PDSDPI_PORT
+      PDS_HOST: $PDS_HOST
+      PDS_PORT: $PDS_PORT
     ports:
       - $PDSPHENOTYPEMAPPING_PORT:8080
 

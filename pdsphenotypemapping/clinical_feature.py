@@ -5,11 +5,12 @@ import requests
 import re
 
 
-pdsdpi_host = os.environ["PDSDPI_HOST"]
-pdsdpi_port = os.environ["PDSDPI_PORT"]
+pds_host = os.environ["PDS_HOST"]
+pds_port = os.environ["PDS_PORT"]
 
 
-pdsdpi_url_base = f"http://{pdsdpi_host}:{pdsdpi_port}"
+def pdsdpi_url_base(plugin):
+    return f"http://{pds_host}:{pds_port}/v1/plugin/{plugin}"
 
 
 def query_records(records, codes, timestamp):
@@ -75,32 +76,32 @@ def query_records(records, codes, timestamp):
         }
     
 
-def get_observation(patient_id):
-    resp = requests.get(f"{pdsdpi_url_base}/Observation?patient={patient_id}")
+def get_observation(patient_id, plugin):
+    resp = requests.get(pdsdpi_url_base(plugin) + f"/Observation?patient={patient_id}")
     if resp.status_code == 200:
         return unbundle(resp.json())
     else:
         return None
 
 
-def get_condition(patient_id):
-    resp = requests.get(f"{pdsdpi_url_base}/Condition?patient={patient_id}")
+def get_condition(patient_id, plugin):
+    resp = requests.get(pdsdpi_url_base(plugin) + f"/Condition?patient={patient_id}")
     if resp.status_code == 200:
         return unbundle(resp.json())
     else:
         return None
 
 
-def get_patient(patient_id):
-    resp = requests.get(f"{pdsdpi_url_base}/Patient/{patient_id}")
+def get_patient(patient_id, plugin):
+    resp = requests.get(pdsdpi_url_base(plugin) + f"/Patient/{patient_id}")
     if resp.status_code == 200:
         return resp.json()
     else:
         return None
 
 
-def height(patient_id, timestamp):
-    records = get_observation(patient_id)
+def height(patient_id, timestamp, plugin):
+    records = get_observation(patient_id, plugin)
     if records == None:
         return {
             "value": None,
@@ -117,8 +118,8 @@ def height(patient_id, timestamp):
         ], timestamp)
 
 
-def weight(patient_id, timestamp):
-    records = get_observation(patient_id)
+def weight(patient_id, timestamp, plugin):
+    records = get_observation(patient_id, plugin)
     if records == None:
         return {
             "value": None,
@@ -135,8 +136,8 @@ def weight(patient_id, timestamp):
         ], timestamp)
 
 
-def bmi(patient_id, timestamp):
-    records = get_observation(patient_id)
+def bmi(patient_id, timestamp, plugin):
+    records = get_observation(patient_id, plugin)
     if records == None:
         return {
             "value": None,
@@ -158,8 +159,8 @@ def calculate_age(born, timestamp):
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
 
-def age(patient_id, timestamp):
-    patient = get_patient(patient_id)
+def age(patient_id, timestamp, plugin):
+    patient = get_patient(patient_id, plugin)
     if patient == None:
         return {
             "value": None,
@@ -184,8 +185,8 @@ def age(patient_id, timestamp):
             }
 
 
-def gender(patient_id, timestamp):
-    patient = get_patient(patient_id)
+def gender(patient_id, timestamp, plugin):
+    patient = get_patient(patient_id, plugin)
     if patient == None:
         return {
             "value": None,
@@ -200,8 +201,8 @@ def gender(patient_id, timestamp):
         }
 
 
-def race(patient_id, timestamp):
-    patient = get_patient(patient_id)
+def race(patient_id, timestamp, plugin):
+    patient = get_patient(patient_id, plugin)
     if patient == None:
         return {
             "value": None,
@@ -216,8 +217,8 @@ def race(patient_id, timestamp):
         }
 
 
-def ethnicity(patient_id, timestamp):
-    patient = get_patient(patient_id)
+def ethnicity(patient_id, timestamp, plugin):
+    patient = get_patient(patient_id, plugin)
     if patient == None:
         return {
             "value": None,
@@ -232,8 +233,8 @@ def ethnicity(patient_id, timestamp):
         }
 
 
-def serum_creatinine(patient_id, timestamp):
-    return query_records(get_observation(patient_id), [
+def serum_creatinine(patient_id, timestamp, plugin):
+    return query_records(get_observation(patient_id, plugin), [
 	{
 	    "system":"http://loinc.org",
 	    "code":"2160-0",
@@ -242,8 +243,8 @@ def serum_creatinine(patient_id, timestamp):
     ], timestamp)
 
 
-def pregnancy(patient_id, timestamp):
-    return query_records(get_condition(patient_id), [
+def pregnancy(patient_id, timestamp, plugin):
+    return query_records(get_condition(patient_id, plugin), [
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
             "code":"^Z34\\.",
@@ -252,8 +253,8 @@ def pregnancy(patient_id, timestamp):
     ], timestamp)
 
 
-def bleeding(patient_id, timestamp):
-    return query_records(get_condition(patient_id), [
+def bleeding(patient_id, timestamp, plugin):
+    return query_records(get_condition(patient_id, plugin), [
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
             "code":"I60\\..*",
@@ -507,8 +508,8 @@ def bleeding(patient_id, timestamp):
     ], timestamp)
 
 
-def kidney_dysfunction(patient_id, timestamp):
-    query_records(get_condition(patient_id), [
+def kidney_dysfunction(patient_id, timestamp, plugin):
+    query_records(get_condition(patient_id, plugin), [
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
             "code":"N00\\..*",

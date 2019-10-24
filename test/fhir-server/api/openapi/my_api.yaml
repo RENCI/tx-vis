@@ -3,7 +3,7 @@ info:
   title: "fhir server"
   version: "1.0.0"
 paths:
-  /Patient/{patient_id}:
+  /v1/plugin/dpi/Patient/{patient_id}:
     get:
       operationId: api.get_patient
       parameters:
@@ -20,7 +20,7 @@ paths:
               schema: {}
         '404':
           description: not found
-  /Observation:
+  /v1/plugin/dpi/Observation:
     get:
       operationId: api.get_observation
       parameters:
@@ -37,7 +37,7 @@ paths:
               schema: {}
         '404':
           description: not found
-  /Condition:
+  /v1/plugin/dpi/Condition:
     get:
       operationId: api.get_condition
       parameters:

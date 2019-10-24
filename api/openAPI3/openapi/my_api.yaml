@@ -37,6 +37,11 @@ paths:
           schema:
             type: string
           required: true
+        - in: query
+          name: data_provider_plugin_interface
+          schema:
+            type: string
+          required: true
       responses: # has to match output of dispatcher.py
         '200':
           description: Successful operation
