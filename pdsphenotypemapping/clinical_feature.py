@@ -201,36 +201,63 @@ def gender(patient_id, timestamp, plugin):
         }
 
 
-def race(patient_id, timestamp, plugin):
-    patient = get_patient(patient_id, plugin)
-    if patient == None:
-        return {
-            "value": None,
-            "certitude": 0,
-            "calculation": "record not found"            
-        }
-    else:
-        return {
-            "value": list(map(lambda a: a["valueCodeableConcept"],filter(lambda x: x["url"]=="http://hl7.org/fhir/StructureDefinition/us-core-race",patient["extension"]))),
-            "certitude": 2,
-            "calculation": "http://hl7.org/fhir/StructureDefinition/us-core-race"
-        }
+def demographic_extension(url):
+    def func(patient_id, timestamp, plugin):
+        patient = get_patient(patient_id, plugin)
+        if patient == None:
+            return {
+                "value": None,
+                "certitude": 0,
+                "calculation": "record not found"            
+            }
+        else:
+            extension = patient.get("extension")
+            if extension is None:
+                return {
+                    "value": None,
+                    "certitude": 0,
+                    "calculation": "extension not found"
+                }
+            else:
+        
+                filtered = filter(lambda x: x["url"]==url, extension)
+                if len(filtered) == 0:
+                    return {
+                        "value": None,
+                        "certitude": 0,
+                        "calculation": "extension not found"
+                    }
+                else:
+                    certitude = 2
+                    value = []
+                    calculation = url
+                    hasValueCodeableConcept = True
+
+                    for a in filtered:
+                        valueCodeableConcept = a.get("valueCodeableConcept")
+                        if valueCodeableConcept is None:
+                            certitude = 1
+                            calculation += " valueCodeableConcept not found"
+                        else:
+                            hasValueCodeableConcept = True
+                            value.append(valueCodeableConcept)
+
+                    if len(value) == 0:
+                        certitude = 0
+                    elif not hasValueCodeableConcept:
+                        calculation += " on some extension"
+
+                    return {
+                        "value": value,
+                        "certitude": certitude,
+                        "calculation": calculation
+                    }
 
 
-def ethnicity(patient_id, timestamp, plugin):
-    patient = get_patient(patient_id, plugin)
-    if patient == None:
-        return {
-            "value": None,
-            "certitude": 0,
-            "calculation": "record not found"            
-        }
-    else:
-        return {
-            "value": list(map(lambda a: a["valueCodeableConcept"],filter(lambda x: x["url"]=="http://hl7.org/fhir/StructureDefinition/us-core-ethnicity",patient["extension"]))),
-            "certitude": 2,
-            "calculation": "http://hl7.org/fhir/StructureDefinition/us-core-ethnicity"
-        }
+race = demographic_extension("http://hl7.org/fhir/StructureDefinition/us-core-race")
+
+
+ethnicity = demographic_extension("http://hl7.org/fhir/StructureDefinition/us-core-ethnicity")
 
 
 def serum_creatinine(patient_id, timestamp, plugin):
