@@ -252,6 +252,7 @@ def demographic_extension(url):
                         "certitude": certitude,
                         "calculation": calculation
                     }
+    return func
 
 
 race = demographic_extension("http://hl7.org/fhir/StructureDefinition/us-core-race")
