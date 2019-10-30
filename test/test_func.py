@@ -83,7 +83,7 @@ json_headers = {
 }
 
 def test_api_age():
-    result=requests.get("http://pdsphenotypemapping:8080/mapping?patient_id=1000&clinical_feature_variable=age&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_interface=dpi", headers=json_headers)
+    result=requests.get("http://pdsphenotypemapping:8080/mapping?patient_id=1000&clinical_feature_variable=30525-0&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_interface=dpi", headers=json_headers)
     print(result.content)
     assert result.status_code == 200
                 
@@ -94,7 +94,7 @@ def test_api_age():
     }
     
 def test_api_age_no_field():
-    result=requests.get("http://pdsphenotypemapping:8080/mapping?patient_id=1001&clinical_feature_variable=age&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_interface=dpi", headers=json_headers)
+    result=requests.get("http://pdsphenotypemapping:8080/mapping?patient_id=1001&clinical_feature_variable=30525-0&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_interface=dpi", headers=json_headers)
     print(result.content)
     assert result.status_code == 200
                 
@@ -105,7 +105,7 @@ def test_api_age_no_field():
     }
     
 def test_api_age_no_record():
-    result=requests.get("http://pdsphenotypemapping:8080/mapping?patient_id=2000&clinical_feature_variable=age&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_interface=dpi", headers=json_headers)
+    result=requests.get("http://pdsphenotypemapping:8080/mapping?patient_id=2000&clinical_feature_variable=30525-0&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_interface=dpi", headers=json_headers)
     print(result.content)
     assert result.status_code == 200
                 

@@ -798,10 +798,10 @@ mapping = {
     "82810-3": pregnancy, # pregnancy
     "HP:0001892": bleeding, # bleeding
     "HP:0000077": kidney_dysfunction, # kidney dysfunction
-    "age": age,
-    "race": race,
-    "ethnicity": ethnicity,
-    "gender": gender,
+    "30525-0": age,
+    "54134-2": race,
+    "54120-1": ethnicity,
+    "21840-4": gender,
     "8302-2": height,
     "29463-7": weight,
     "39156-5": bmi
