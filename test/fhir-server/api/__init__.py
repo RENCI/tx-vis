@@ -129,7 +129,7 @@ conditions = {
 }
 
 def get_patient(patient_id):
-    return patients.get(patient_id, (404, "Not Found"))
+    return patients.get(patient_id, ("Not Found", 404))
 
 def get_observation(patient):
     return observations.get(patient, {"resourceType":"Bundle"})

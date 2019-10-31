@@ -3,14 +3,15 @@ from datetime import datetime, date
 import os
 import requests
 import re
-
+from oslash import Left, Right
+from tx.utils import get, post
 
 pds_host = os.environ["PDS_HOST"]
 pds_port = os.environ["PDS_PORT"]
 
 
 def pdsdpi_url_base(plugin):
-    return f"http://{pds_host}:{pds_port}/v1/plugin/{plugin}"
+    return f"https://{pds_host}:{pds_port}/v1/plugin/{plugin}"
 
 
 def query_records(records, codes, timestamp):
@@ -77,133 +78,64 @@ def query_records(records, codes, timestamp):
     
 
 def get_observation(patient_id, plugin):
-    resp = requests.get(pdsdpi_url_base(plugin) + f"/Observation?patient={patient_id}")
-    if resp.status_code == 200:
-        return unbundle(resp.json())
-    else:
-        return None
+    resp = get(pdsdpi_url_base(plugin) + f"/Observation?patient={patient_id}", verify=False)
+    return resp.map(lambda x : unbundle(x))
 
 
 def get_condition(patient_id, plugin):
-    resp = requests.get(pdsdpi_url_base(plugin) + f"/Condition?patient={patient_id}")
-    if resp.status_code == 200:
-        return unbundle(resp.json())
-    else:
-        return None
+    resp = get(pdsdpi_url_base(plugin) + f"/Condition?patient={patient_id}", verify=False)
+    return resp.map(lambda x : unbundle(x))
 
 
 def get_patient(patient_id, plugin):
-    resp = requests.get(pdsdpi_url_base(plugin) + f"/Patient/{patient_id}")
-    if resp.status_code == 200:
-        return resp.json()
+    resp = get(pdsdpi_url_base(plugin) + f"/Patient/{patient_id}", verify=False)
+    if isinstance(resp, Left) and isinstance(resp.value[0], dict) and resp.value[0].get("status_code") == 404:
+        return Right(None)
     else:
-        return None
+        return resp
 
 
 def height(patient_id, timestamp, plugin):
-    records = get_observation(patient_id, plugin)
-    if records == None:
-        return {
-            "value": None,
-            "certitude": 0,
-            "calculation": "record not found"            
-        }
-    else:
-        return query_records(records, [
+    mrecords = get_observation(patient_id, plugin)
+    return mrecords.map(lambda records: query_records(records, [
 	    {
 	        "system":"http://loinc.org",
 	        "code":"8302-2",
 	        "is_regex": False
 	    }
-        ], timestamp)
+        ], timestamp))
 
 
 def weight(patient_id, timestamp, plugin):
-    records = get_observation(patient_id, plugin)
-    if records == None:
-        return {
-            "value": None,
-            "certitude": 0,
-            "calculation": "record not found"            
-        }
-    else:
-        return query_records(records, [
+    mrecords = get_observation(patient_id, plugin)
+    return mrecords.map(lambda records: query_records(records, [
 	    {
 	        "system":"http://loinc.org",
 	        "code":"29463-7",
 	        "is_regex": False
 	    }
-        ], timestamp)
+        ], timestamp))
 
 
 def bmi(patient_id, timestamp, plugin):
-    records = get_observation(patient_id, plugin)
-    if records == None:
-        return {
-            "value": None,
-            "certitude": 0,
-            "calculation": "record not found"            
-        }
-    else:
-        return query_records(records, [
+    mrecords = get_observation(patient_id, plugin)
+    return mrecords.map(lambda records: query_records(records, [
 	    {
 	        "system":"http://loinc.org",
 	        "code":"39156-5",
 	        "is_regex": False
 	    }
-        ], timestamp)
+        ], timestamp))
     
 
-def calculate_age(born, timestamp):
+def calculate_age2(born, timestamp):
     today = strtodate(timestamp)
     return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
 
 
 def age(patient_id, timestamp, plugin):
-    patient = get_patient(patient_id, plugin)
-    if patient == None:
-        return {
-            "value": None,
-            "certitude": 0,
-            "calculation": "record not found"            
-        }
-    else:
-        if "birthDate" in patient:
-            birth_date = patient["birthDate"]
-            date_of_birth = datetime.strptime(birth_date, "%Y-%m-%d")
-            age = calculate_age(date_of_birth, timestamp)
-            return {
-                "value": age,
-                "certitude": 2,
-                "calculation": "birthDate"
-            }
-        else:
-            return {
-                "value": None,
-                "certitude": 0,
-                "calculation": "birthDate not set"
-            }
-
-
-def gender(patient_id, timestamp, plugin):
-    patient = get_patient(patient_id, plugin)
-    if patient == None:
-        return {
-            "value": None,
-            "certitude": 0,
-            "calculation": "record not found"            
-        }
-    else:
-        return {
-            "value": patient["gender"],
-            "certitude": 2,
-            "calculation": "gender"
-        }
-
-
-def demographic_extension(url):
-    def func(patient_id, timestamp, plugin):
-        patient = get_patient(patient_id, plugin)
+    mpatient = get_patient(patient_id, plugin)
+    def calculate_age(patient):
         if patient == None:
             return {
                 "value": None,
@@ -211,47 +143,95 @@ def demographic_extension(url):
                 "calculation": "record not found"            
             }
         else:
-            extension = patient.get("extension")
-            if extension is None:
+            if "birthDate" in patient:
+                birth_date = patient["birthDate"]
+                date_of_birth = datetime.strptime(birth_date, "%Y-%m-%d")
+                age = calculate_age2(date_of_birth, timestamp)
+                return {
+                    "value": age,
+                    "certitude": 2,
+                    "calculation": "birthDate"
+                }
+            else:
                 return {
                     "value": None,
                     "certitude": 0,
-                    "calculation": "extension not found"
+                    "calculation": "birthDate not set"
+                }
+    return mpatient.map(calculate_age)
+
+
+def sex(patient_id, timestamp, plugin):
+    mpatient = get_patient(patient_id, plugin)
+    def calculate_sex(patient):
+        if patient == None:
+            return {
+                "value": None,
+                "certitude": 0,
+                "calculation": "record not found"            
+            }
+        else:
+            return {
+                "value": patient["gender"],
+                "certitude": 2,
+                "calculation": "gender"
+            }
+    return mpatient.map(calculate_sex)
+
+
+def demographic_extension(url):
+    def func(patient_id, timestamp, plugin):
+        mpatient = get_patient(patient_id, plugin)
+        def calculate_demographic(patient):
+            if patient == None:
+                return {
+                    "value": None,
+                    "certitude": 0,
+                    "calculation": "record not found"            
                 }
             else:
-        
-                filtered = filter(lambda x: x["url"]==url, extension)
-                if len(filtered) == 0:
+                extension = patient.get("extension")
+                if extension is None:
                     return {
                         "value": None,
                         "certitude": 0,
                         "calculation": "extension not found"
                     }
                 else:
-                    certitude = 2
-                    value = []
-                    calculation = url
-                    hasValueCodeableConcept = True
+                
+                    filtered = filter(lambda x: x["url"]==url, extension)
+                    if len(filtered) == 0:
+                        return {
+                            "value": None,
+                            "certitude": 0,
+                            "calculation": "extension not found"
+                        }
+                    else:
+                        certitude = 2
+                        value = []
+                        calculation = url
+                        hasValueCodeableConcept = True
 
-                    for a in filtered:
-                        valueCodeableConcept = a.get("valueCodeableConcept")
-                        if valueCodeableConcept is None:
-                            certitude = 1
-                            calculation += " valueCodeableConcept not found"
-                        else:
-                            hasValueCodeableConcept = True
-                            value.append(valueCodeableConcept)
+                        for a in filtered:
+                            valueCodeableConcept = a.get("valueCodeableConcept")
+                            if valueCodeableConcept is None:
+                                certitude = 1
+                                calculation += " valueCodeableConcept not found"
+                            else:
+                                hasValueCodeableConcept = True
+                                value.append(valueCodeableConcept)
 
-                    if len(value) == 0:
-                        certitude = 0
-                    elif not hasValueCodeableConcept:
-                        calculation += " on some extension"
+                        if len(value) == 0:
+                            certitude = 0
+                        elif not hasValueCodeableConcept:
+                            calculation += " on some extension"
 
-                    return {
-                        "value": value,
-                        "certitude": certitude,
-                        "calculation": calculation
-                    }
+                        return {
+                            "value": value,
+                            "certitude": certitude,
+                            "calculation": calculation
+                        }
+        return mpatient.map(calculate_demographic)
     return func
 
 
@@ -262,27 +242,30 @@ ethnicity = demographic_extension("http://hl7.org/fhir/StructureDefinition/us-co
 
 
 def serum_creatinine(patient_id, timestamp, plugin):
-    return query_records(get_observation(patient_id, plugin), [
+    mrecords = get_observation(patient_id, plugin)
+    return mrecords.map(lambda records: query_records(records, [
 	{
 	    "system":"http://loinc.org",
 	    "code":"2160-0",
 	    "is_regex": False
 	}
-    ], timestamp)
+    ], timestamp))
 
 
 def pregnancy(patient_id, timestamp, plugin):
-    return query_records(get_condition(patient_id, plugin), [
+    mrecords = get_condition(patient_id, plugin)
+    return mrecords.map(lambda records: query_records(records, [
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
             "code":"^Z34\\.",
             "is_regex": True
         }
-    ], timestamp)
+    ], timestamp))
 
 
 def bleeding(patient_id, timestamp, plugin):
-    return query_records(get_condition(patient_id, plugin), [
+    mrecords = get_condition(patient_id, plugin)
+    return mrecords.map(lambda records: query_records(records, [
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
             "code":"I60\\..*",
@@ -533,11 +516,12 @@ def bleeding(patient_id, timestamp, plugin):
             "code":"R58\\..*",
             "is_regex":True,
         }
-    ], timestamp)
+    ], timestamp))
 
 
 def kidney_dysfunction(patient_id, timestamp, plugin):
-    query_records(get_condition(patient_id, plugin), [
+    mrecords = get_condition(patient_id, plugin)
+    return mrecords.map(lambda records: query_records(records, [
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
             "code":"N00\\..*",
@@ -790,7 +774,7 @@ def kidney_dysfunction(patient_id, timestamp, plugin):
             "is_regex":True,
 	    
         }
-    ], timestamp)
+    ], timestamp))
 
 
 mapping = {
@@ -801,7 +785,7 @@ mapping = {
     "30525-0": age,
     "54134-2": race,
     "54120-1": ethnicity,
-    "21840-4": gender,
+    "21840-4": sex,
     "8302-2": height,
     "29463-7": weight,
     "39156-5": bmi
