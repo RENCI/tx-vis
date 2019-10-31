@@ -778,10 +778,19 @@ def kidney_dysfunction(patient_id, timestamp, plugin):
 
 
 mapping = {
-    "2160-0": serum_creatinine, # serum creatinine
-    "82810-3": pregnancy, # pregnancy
+    "LOINC:2160-0": serum_creatinine, # serum creatinine
+    "LOINC:82810-3": pregnancy, # pregnancy
     "HP:0001892": bleeding, # bleeding
     "HP:0000077": kidney_dysfunction, # kidney dysfunction
+    "LOINC:30525-0": age,
+    "LOINC:54134-2": race,
+    "LOINC:54120-1": ethnicity,
+    "LOINC:21840-4": sex,
+    "LOINC:8302-2": height,
+    "LOINC:29463-7": weight,
+    "LOINC:39156-5": bmi,
+    "2160-0": serum_creatinine, # serum creatinine
+    "82810-3": pregnancy, # pregnancy
     "30525-0": age,
     "54134-2": race,
     "54120-1": ethnicity,
