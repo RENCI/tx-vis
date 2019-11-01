@@ -129,36 +129,41 @@ def bmi(patient_id, timestamp, plugin):
     
 
 def calculate_age2(born, timestamp):
-    today = strtodate(timestamp)
-    return today.year - born.year - ((today.month, today.day) < (born.month, born.day))
+    try:
+        today = strtodate(timestamp)
+    except Exception as e:
+        return Left(({
+            "error": str(e)
+        }), 500)
+    return Right(today.year - born.year - ((today.month, today.day) < (born.month, born.day)))
 
 
 def age(patient_id, timestamp, plugin):
     mpatient = get_patient(patient_id, plugin)
     def calculate_age(patient):
         if patient == None:
-            return {
+            return Right({
                 "value": None,
                 "certitude": 0,
                 "calculation": "record not found"            
-            }
+            })
         else:
             if "birthDate" in patient:
                 birth_date = patient["birthDate"]
                 date_of_birth = datetime.strptime(birth_date, "%Y-%m-%d")
-                age = calculate_age2(date_of_birth, timestamp)
-                return {
+                mage = calculate_age2(date_of_birth, timestamp)
+                return mage.map(lambda age: {
                     "value": age,
                     "certitude": 2,
                     "calculation": "birthDate"
-                }
+                })
             else:
-                return {
+                return Right({
                     "value": None,
                     "certitude": 0,
                     "calculation": "birthDate not set"
-                }
-    return mpatient.map(calculate_age)
+                })
+    return mpatient.bind(calculate_age)
 
 
 def sex(patient_id, timestamp, plugin):
@@ -788,14 +793,5 @@ mapping = {
     "LOINC:21840-4": sex,
     "LOINC:8302-2": height,
     "LOINC:29463-7": weight,
-    "LOINC:39156-5": bmi,
-    "2160-0": serum_creatinine, # serum creatinine
-    "82810-3": pregnancy, # pregnancy
-    "30525-0": age,
-    "54134-2": race,
-    "54120-1": ethnicity,
-    "21840-4": sex,
-    "8302-2": height,
-    "29463-7": weight,
-    "39156-5": bmi
+    "LOINC:39156-5": bmi
 }
