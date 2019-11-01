@@ -1,0 +1,58 @@
+openapi: 3.0.0
+info:
+  title: "fhir server"
+  version: "1.0.0"
+paths:
+  /v1/plugin/dpi/Patient/{patient_id}:
+    get:
+      operationId: api.get_patient
+      parameters:
+        - name: patient_id
+          in: path
+          schema:
+            type: string
+          required: true
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: not found
+  /v1/plugin/dpi/Observation:
+    get:
+      operationId: api.get_observation
+      parameters:
+        - name: patient
+          in: query
+          schema:
+            type: string
+          required: true
+      responses: # has to match output of dispatcher.py
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: not found
+  /v1/plugin/dpi/Condition:
+    get:
+      operationId: api.get_condition
+      parameters:
+        - name: patient
+          in: query
+          schema:
+            type: string
+          required: true
+      responses: # has to match output of dispatcher.py
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema: {}
+        '404':
+          description: not found
+
+
