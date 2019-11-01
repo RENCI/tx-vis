@@ -11,7 +11,7 @@ pds_port = os.environ["PDS_PORT"]
 
 
 def pdsdpi_url_base(plugin):
-    return f"https://{pds_host}:{pds_port}/v1/plugin/{plugin}"
+    return f"http://{pds_host}:{pds_port}/v1/plugin/{plugin}"
 
 
 def query_records(records, codes, timestamp):
@@ -78,17 +78,17 @@ def query_records(records, codes, timestamp):
     
 
 def get_observation(patient_id, plugin):
-    resp = get(pdsdpi_url_base(plugin) + f"/Observation?patient={patient_id}", verify=False)
+    resp = get(pdsdpi_url_base(plugin) + f"/Observation?patient={patient_id}")
     return resp.map(lambda x : unbundle(x))
 
 
 def get_condition(patient_id, plugin):
-    resp = get(pdsdpi_url_base(plugin) + f"/Condition?patient={patient_id}", verify=False)
+    resp = get(pdsdpi_url_base(plugin) + f"/Condition?patient={patient_id}")
     return resp.map(lambda x : unbundle(x))
 
 
 def get_patient(patient_id, plugin):
-    resp = get(pdsdpi_url_base(plugin) + f"/Patient/{patient_id}", verify=False)
+    resp = get(pdsdpi_url_base(plugin) + f"/Patient/{patient_id}")
     if isinstance(resp, Left) and isinstance(resp.value[0], dict) and resp.value[0].get("status_code") == 404:
         return Right(None)
     else:

@@ -7,7 +7,7 @@ services:
     command: ["-s", "-vv"]
     depends_on:
       - pdsphenotypemapping
-      - pdsphenotypemapping-test-fhir-server
+      - pdsphenotypemapping-test-pds-server
 
 
 
