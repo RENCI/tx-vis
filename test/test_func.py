@@ -121,8 +121,10 @@ def test_api_serum_creatinine():
     assert result.status_code == 200
                 
     assert result.json() == {
-        "value": {'code': '%', 'system': 'http://unitsofmeasure.org', 'unit': '%', 'value': 95},
-        "calculation": "from http://loinc.org 2160-0 at 2019-10-19T00:00:00Z",
+        "value": "95 %",
+        "quantity": {'code': '%', 'system': 'http://unitsofmeasure.org', 'unit': '%', 'value': 95},
+        "calculation": "from http://loinc.org 2160-0",
+        "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2
     }
       
@@ -133,8 +135,10 @@ def test_api_serum_creatinine_no_timestamp():
     assert result.status_code == 200
                 
     assert result.json() == {
-        "value": {'code': '%', 'system': 'http://unitsofmeasure.org', 'unit': '%', 'value': 95},
-        "calculation": "from http://loinc.org 2160-0 at notimestamp",
+        "value": "95 %",
+        "quantity": {'code': '%', 'system': 'http://unitsofmeasure.org', 'unit': '%', 'value': 95},
+        "calculation": "from http://loinc.org 2160-0",
+        "timestamp": None,
         "certitude": 1
     }
 
@@ -156,8 +160,10 @@ def test_api_bleeding():
     assert result.status_code == 200
                 
     assert result.json() == {
-        "value": [],
-        "calculation": "from http://hl7.org/fhir/sid/icd-10-cm I60.0011 at 2019-10-19T00:00:00Z",
+        "value": True,
+        "quantity": None,
+        "calculation": "from http://hl7.org/fhir/sid/icd-10-cm I60.0011",
+        "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2
     }
       
@@ -168,8 +174,10 @@ def test_api_bleeding_no_timestamp():
     assert result.status_code == 200
                 
     assert result.json() == {
-        "value": [],
-        "calculation": "from http://hl7.org/fhir/sid/icd-10-cm I60.0011 at notimestamp",
+        "value": True,
+        "quantity": None,
+        "calculation": "from http://hl7.org/fhir/sid/icd-10-cm I60.0011",
+        "timestamp": None,
         "certitude": 1
     }
 

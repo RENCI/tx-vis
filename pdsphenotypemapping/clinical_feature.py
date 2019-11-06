@@ -61,18 +61,24 @@ def query_records(records, codes, timestamp):
         keyr = extract_key(record)
         c = calculation(record["code"]["coding"])
         if keyr is None:
-            c += " at notimestamp"
+            ts = None
             cert = 1
         else:
-            c += " at " + extract_key(record)
+            ts = extract_key(record)
             cert = 2
-        if "valueQuantity" in record:
-            v = record["valueQuantity"]
+        vq = record.get("valueQuantity")
+        if vq is not None:
+            v = str(vq["value"])
+            unit = vq.get("unit")
+            if unit is not None:
+                v += " " + unit
         else:
-            v = []
+            v = True
         return {
             "value": v,
+            "quantity": vq,
             "certitude": cert,
+            "timestamp": ts,
             "calculation": c
         }
     
