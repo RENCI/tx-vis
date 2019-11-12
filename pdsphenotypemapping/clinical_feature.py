@@ -5,6 +5,9 @@ import requests
 import re
 from oslash import Left, Right
 from tx.utils import get, post
+from pint import UnitRegistry
+ureg = UnitRegistry()
+
 
 pds_host = os.environ["PDS_HOST"]
 pds_port = os.environ["PDS_PORT"]
@@ -14,13 +17,23 @@ def pdsdpi_url_base(plugin):
     return f"http://{pds_host}:{pds_port}/v1/plugin/{plugin}"
 
 
-def query_records(records, codes, timestamp):
+def convert(v, u, u2):
+    if u == u2:
+        return Right(v)
+    else:
+        try:
+            return Right((v * ureg.parse_expression(u)).to(ureg.parse_expression(u2)).magnitude)
+        except Exception as e:
+            return Left(str(e))
+
+
+def query_records(records, codes, unit, timestamp):
     if records == None:
-        return {
+        return Right({
             "value": None,
             "certitude": 0,
             "calculation": "no record found"
-        }
+        })
 
     def calculation(codes):
         return "from " + ",".join(list(map(lambda a: a["system"] + " " + a["code"], codes)))
@@ -44,11 +57,11 @@ def query_records(records, codes, timestamp):
                     if (is_regex and re.search(code, "^" + c2["code"] + "$")) or c2["code"] == code:
                         records_filtered.append(record)
     if len(records_filtered) == 0:
-        return {
+        return Right({
             "value": None,
             "certitude": 0,
             "calculation": calculation(codes) 
-        }
+        })
     else:
         ts = strtots(timestamp)
         def key(a):
@@ -68,19 +81,21 @@ def query_records(records, codes, timestamp):
             cert = 2
         vq = record.get("valueQuantity")
         if vq is not None:
-            v = str(vq["value"])
-            unit = vq.get("unit")
-            if unit is not None:
-                v += " " + unit
+            v = vq["value"]
+            u = vq.get("unit")
+            if u is not None and unit is not None:
+                v = convert(v, u, unit)
+                if isinstance(v, Left):
+                    return v
         else:
             v = True
-        return {
+        return Right({
             "value": v,
             "quantity": vq,
             "certitude": cert,
             "timestamp": ts,
             "calculation": c
-        }
+        })
     
 
 def get_observation(patient_id, plugin):
@@ -101,50 +116,52 @@ def get_patient(patient_id, plugin):
         return resp
 
 
-def height(patient_id, timestamp, plugin):
+def height(patient_id, unit, timestamp, plugin):
     mrecords = get_observation(patient_id, plugin)
-    return mrecords.map(lambda records: query_records(records, [
+    return mrecords.bind(lambda records: query_records(records, [
 	    {
 	        "system":"http://loinc.org",
 	        "code":"8302-2",
 	        "is_regex": False
 	    }
-        ], timestamp))
+        ], unit, timestamp))
 
 
-def weight(patient_id, timestamp, plugin):
+def weight(patient_id, unit, timestamp, plugin):
     mrecords = get_observation(patient_id, plugin)
-    return mrecords.map(lambda records: query_records(records, [
+    return mrecords.bind(lambda records: query_records(records, [
 	    {
 	        "system":"http://loinc.org",
 	        "code":"29463-7",
 	        "is_regex": False
 	    }
-        ], timestamp))
+        ], unit, timestamp, unit))
 
 
-def bmi(patient_id, timestamp, plugin):
+def bmi(patient_id, unit, timestamp, plugin):
     mrecords = get_observation(patient_id, plugin)
-    return mrecords.map(lambda records: query_records(records, [
+    return mrecords.bind(lambda records: query_records(records, [
 	    {
 	        "system":"http://loinc.org",
 	        "code":"39156-5",
 	        "is_regex": False
 	    }
-        ], timestamp))
+        ], unit, timestamp))
     
 
 def calculate_age2(born, timestamp):
     try:
         today = strtodate(timestamp)
     except Exception as e:
-        return Left(({
+        return Left({
             "error": str(e)
-        }), 500)
+        })
     return Right(today.year - born.year - ((today.month, today.day) < (born.month, born.day)))
 
 
-def age(patient_id, timestamp, plugin):
+def age(patient_id, unit, timestamp, plugin):
+    if unit is not None and unit != "year":
+        return Left((f"unsupported unit {unit}", 403))
     mpatient = get_patient(patient_id, plugin)
     def calculate_age(patient):
         if patient == None:
@@ -172,7 +189,7 @@ def age(patient_id, timestamp, plugin):
     return mpatient.bind(calculate_age)
 
 
-def sex(patient_id, timestamp, plugin):
+def sex(patient_id, unit, timestamp, plugin):
     mpatient = get_patient(patient_id, plugin)
     def calculate_sex(patient):
         if patient == None:
@@ -252,31 +269,31 @@ race = demographic_extension("http://hl7.org/fhir/StructureDefinition/us-core-ra
 ethnicity = demographic_extension("http://hl7.org/fhir/StructureDefinition/us-core-ethnicity")
 
 
-def serum_creatinine(patient_id, timestamp, plugin):
+def serum_creatinine(patient_id, unit, timestamp, plugin):
     mrecords = get_observation(patient_id, plugin)
-    return mrecords.map(lambda records: query_records(records, [
+    return mrecords.bind(lambda records: query_records(records, [
 	{
 	    "system":"http://loinc.org",
 	    "code":"2160-0",
 	    "is_regex": False
 	}
-    ], timestamp))
+    ], unit, timestamp))
 
 
-def pregnancy(patient_id, timestamp, plugin):
+def pregnancy(patient_id, unit, timestamp, plugin):
     mrecords = get_condition(patient_id, plugin)
-    return mrecords.map(lambda records: query_records(records, [
+    return mrecords.bind(lambda records: query_records(records, [
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
             "code":"^Z34\\.",
             "is_regex": True
         }
-    ], timestamp))
+    ], unit, timestamp))
 
 
-def bleeding(patient_id, timestamp, plugin):
+def bleeding(patient_id, unit, timestamp, plugin):
     mrecords = get_condition(patient_id, plugin)
-    return mrecords.map(lambda records: query_records(records, [
+    return mrecords.bind(lambda records: query_records(records, [
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
             "code":"I60\\..*",
@@ -527,12 +544,12 @@ def bleeding(patient_id, timestamp, plugin):
             "code":"R58\\..*",
             "is_regex":True,
         }
-    ], timestamp))
+    ], unit, timestamp))
 
 
-def kidney_dysfunction(patient_id, timestamp, plugin):
+def kidney_dysfunction(patient_id, unit, timestamp, plugin):
     mrecords = get_condition(patient_id, plugin)
-    return mrecords.map(lambda records: query_records(records, [
+    return mrecords.bind(lambda records: query_records(records, [
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
             "code":"N00\\..*",
@@ -785,7 +802,7 @@ def kidney_dysfunction(patient_id, timestamp, plugin):
             "is_regex":True,
 	    
         }
-    ], timestamp))
+    ], unit, timestamp))
 
 
 mapping = {

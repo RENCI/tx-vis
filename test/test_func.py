@@ -82,112 +82,117 @@ json_headers = {
     "Accept": "application/json"
 }
 
+def query(pid, cv):
+    return requests.post(f"http://pdsphenotypemapping:8080/mapping?patient_id={pid}&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_id=dpi", headers=json_headers, json=[{
+        "clinical_feature_variable": cv
+    }])
+
 def test_api_age():
-    result=requests.get("http://pdsphenotypemapping:8080/mapping?patient_id=1000&clinical_feature_variable=LOINC:30525-0&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_id=dpi", headers=json_headers)
+    result = query("1000", "LOINC:30525-0")
     print(result.content)
     assert result.status_code == 200
                 
-    assert result.json() == {
+    assert result.json() == [{
         "value": 10,
         "calculation": "birthDate",
         "certitude": 2
-    }
+    }]
     
 def test_api_age_no_field():
-    result=requests.get("http://pdsphenotypemapping:8080/mapping?patient_id=1001&clinical_feature_variable=LOINC:30525-0&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_id=dpi", headers=json_headers)
+    result = query("1001", "LOINC:30525-0")
     print(result.content)
     assert result.status_code == 200
                 
-    assert result.json() == {
+    assert result.json() == [{
         "value": None,
         "calculation": "birthDate not set",
         "certitude": 0
-    }
+    }]
     
 def test_api_age_no_record():
-    result=requests.get("http://pdsphenotypemapping:8080/mapping?patient_id=2000&clinical_feature_variable=LOINC:30525-0&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_id=dpi", headers=json_headers)
+    result = query("2000", "LOINC:30525-0")
     print(result.content)
     assert result.status_code == 200
                 
-    assert result.json() == {
+    assert result.json() == [{
         "value": None,
         "calculation": "record not found",
         "certitude": 0
-    }
+    }]
     
 def test_api_serum_creatinine():
-    result=requests.get("http://pdsphenotypemapping:8080/mapping?patient_id=1000&clinical_feature_variable=LOINC:2160-0&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_id=dpi", headers=json_headers)
+    result = query("1000", "LOINC:2160-0")
     print(result.content)
     assert result.status_code == 200
                 
-    assert result.json() == {
-        "value": "95 %",
+    assert result.json() == [{
+        "value": 95,
         "quantity": {'code': '%', 'system': 'http://unitsofmeasure.org', 'unit': '%', 'value': 95},
         "calculation": "from http://loinc.org 2160-0",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2
-    }
+    }]
       
 
 def test_api_serum_creatinine_no_timestamp():
-    result=requests.get("http://pdsphenotypemapping:8080/mapping?patient_id=1001&clinical_feature_variable=LOINC:2160-0&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_id=dpi", headers=json_headers)
+    result = query("1001", "LOINC:2160-0")
     print(result.content)
     assert result.status_code == 200
                 
-    assert result.json() == {
-        "value": "95 %",
+    assert result.json() == [{
+        "value": 95,
         "quantity": {'code': '%', 'system': 'http://unitsofmeasure.org', 'unit': '%', 'value': 95},
         "calculation": "from http://loinc.org 2160-0",
         "timestamp": None,
         "certitude": 1
-    }
+    }]
 
 
 def test_api_serum_creatinine_no_record():
-    result=requests.get("http://pdsphenotypemapping:8080/mapping?patient_id=2000&clinical_feature_variable=LOINC:2160-0&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_id=dpi", headers=json_headers)
+    result = query("2000", "LOINC:2160-0")
     print(result.content)
     assert result.status_code == 200
                 
-    assert result.json() == {
+    assert result.json() == [{
         "value": None,
         "calculation": "from http://loinc.org 2160-0",
         "certitude": 0
-    }
+    }]
 
 def test_api_bleeding():
-    result=requests.get("http://pdsphenotypemapping:8080/mapping?patient_id=1000&clinical_feature_variable=HP:0001892&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_id=dpi", headers=json_headers)
+    result = query("1000", "HP:0001892")
     print(result.content)
     assert result.status_code == 200
                 
-    assert result.json() == {
+    assert result.json() == [{
         "value": True,
         "quantity": None,
         "calculation": "from http://hl7.org/fhir/sid/icd-10-cm I60.0011",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2
-    }
+    }]
       
 
 def test_api_bleeding_no_timestamp():
-    result=requests.get("http://pdsphenotypemapping:8080/mapping?patient_id=1001&clinical_feature_variable=HP:0001892&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_id=dpi", headers=json_headers)
+    result = query("1001", "HP:0001892")
     print(result.content)
     assert result.status_code == 200
                 
-    assert result.json() == {
+    assert result.json() == [{
         "value": True,
         "quantity": None,
         "calculation": "from http://hl7.org/fhir/sid/icd-10-cm I60.0011",
         "timestamp": None,
         "certitude": 1
-    }
+    }]
 
 
 def test_api_bleeding_no_record():
-    result=requests.get("http://pdsphenotypemapping:8080/mapping?patient_id=2000&clinical_feature_variable=HP:0001892&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_id=dpi", headers=json_headers)
+    result = query("2000", "HP:0001892")
     print(result.content)
     assert result.status_code == 200
                 
-    assert result.json() == {
+    assert result.json() == [{
         "value": None,
         "calculation": "from " + ",".join(map(lambda a: a["system"] + " " + a["code"], [
             {
@@ -442,4 +447,4 @@ def test_api_bleeding_no_record():
             }
         ])),
         "certitude": 0
-    }
+    }]
