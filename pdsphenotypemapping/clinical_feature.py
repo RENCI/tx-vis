@@ -4,9 +4,7 @@ import os
 import requests
 import re
 from oslash import Left, Right
-from tx.utils import get, post
-from pint import UnitRegistry
-ureg = UnitRegistry()
+from tx.utils import get, post, convert
 
 
 pds_host = os.environ["PDS_HOST"]
@@ -15,16 +13,6 @@ pds_port = os.environ["PDS_PORT"]
 
 def pdsdpi_url_base(plugin):
     return f"http://{pds_host}:{pds_port}/v1/plugin/{plugin}"
-
-
-def convert(v, u, u2):
-    if u == u2:
-        return Right(v)
-    else:
-        try:
-            return Right((v * ureg.parse_expression(u)).to(ureg.parse_expression(u2)).magnitude)
-        except Exception as e:
-            return Left(str(e))
 
 
 def query_records(records, codes, unit, timestamp):
@@ -83,12 +71,11 @@ def query_records(records, codes, unit, timestamp):
         if vq is not None:
             v = vq["value"]
             u = vq.get("unit")
-            if u is not None and unit is not None:
-                v = convert(v, u, unit)
-                if isinstance(v, Left):
-                    return v
-                else:
-                    v = v.value
+            v = convert(v, u, unit)
+            if isinstance(v, Left):
+                return v
+            else:
+                v = v.value
         else:
             v = True
         return Right({
