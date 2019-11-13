@@ -11,8 +11,8 @@
     "coding": [
       {
         "system": "http ://loinc.org",
-        "code": "29463-7",
-	"display": "Body Weight"
+        "code": "39156-5",
+	"display": "BMI"
       }
     ]
   },
@@ -25,9 +25,6 @@
   "effectiveInstant": "0000-00-00T00:00:00.000+00:00",
   "issued": "0000-00-00T00:00:00.000+00:00",
   "valueQuantity": {
-    "value": 99.9,
-    "unit": "kg",
-    "system": "http://unitsofmeasure.org",
-    "code": "kg"
+    "value": 24.4
   }
 }
