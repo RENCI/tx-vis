@@ -4,7 +4,8 @@ import os
 import requests
 import re
 from oslash import Left, Right
-from tx.utils import get, post, convert
+from tx.requests.utils import get, post
+from tx.pint.utils import convert
 
 
 pds_host = os.environ["PDS_HOST"]
