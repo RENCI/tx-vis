@@ -56,6 +56,28 @@ observations = {
                     "code": "%"
                 }
             }
+        },{
+            "resource":{
+                "resourceType": "Observation",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "29463-7"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1000"
+                },
+                "effectiveInstant": "2019-10-19T00:00:00Z",
+                "valueQuantity": {
+                    "value": 99.9,
+                    "unit": "kg",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "kg"
+                }
+            }
         }]
     },
     "1001": {
@@ -80,6 +102,27 @@ observations = {
                     "unit": "%",
                     "system": "http://unitsofmeasure.org",
                     "code": "%"
+                }
+            }
+        },{
+            "resource":{
+                "resourceType": "Observation",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "29463-7"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1001"
+                },
+                "valueQuantity": {
+                    "value": 99.9,
+                    "unit": "kg",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "kg"
                 }
             }
         }]

@@ -82,10 +82,13 @@ json_headers = {
     "Accept": "application/json"
 }
 
-def query(pid, cv):
-    return requests.post(f"http://pdsphenotypemapping:8080/mapping?patient_id={pid}&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_id=dpi", headers=json_headers, json=[{
+def query(pid, cv, unit=None):
+    q = {
         "clinical_feature_variable": cv
-    }])
+    }
+    if unit is not None:
+        q["unit"] = unit
+    return requests.post(f"http://pdsphenotypemapping:8080/mapping?patient_id={pid}&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_id=dpi", headers=json_headers, json=[q])
 
 def test_api_age():
     result = query("1000", "LOINC:30525-0")
@@ -119,6 +122,24 @@ def test_api_age_no_record():
         "calculation": "record not found",
         "certitude": 0
     }]
+    
+def test_api_age_unit_year():
+    result = query("1000", "LOINC:30525-0", "year")
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": 10,
+        "calculation": "birthDate",
+        "certitude": 2
+    }]
+    
+def test_api_age_unit_wrong():
+    result = query("1000", "LOINC:30525-0", "wrong")
+    print(result.content)
+    assert result.status_code == 403
+                
+    assert result.json() == "unsupported unit wrong"
     
 def test_api_serum_creatinine():
     result = query("1000", "LOINC:2160-0")
@@ -159,6 +180,78 @@ def test_api_serum_creatinine_no_record():
         "certitude": 0
     }]
 
+def test_api_weight():
+    result = query("1000", "LOINC:29463-7")
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": 99.9,
+        "quantity": {'code': 'kg', 'system': 'http://unitsofmeasure.org', 'unit': 'kg', 'value': 99.9},
+        "calculation": "from http://loinc.org 29463-7",
+        "timestamp": "2019-10-19T00:00:00Z",
+        "certitude": 2
+    }]
+      
+
+def test_api_weight_no_timestamp():
+    result = query("1001", "LOINC:29463-7")
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": 99.9,
+        "quantity": {'code': 'kg', 'system': 'http://unitsofmeasure.org', 'unit': 'kg', 'value': 99.9},
+        "calculation": "from http://loinc.org 29463-7",
+        "timestamp": None,
+        "certitude": 1
+    }]
+
+
+def test_api_weight_no_record():
+    result = query("2000", "LOINC:29463-7")
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": None,
+        "calculation": "from http://loinc.org 29463-7",
+        "certitude": 0
+    }]
+
+def test_api_weight_unit_kg():
+    result = query("1000", "LOINC:29463-7", "kg")
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": 99.9,
+        "quantity": {'code': 'kg', 'system': 'http://unitsofmeasure.org', 'unit': 'kg', 'value': 99.9},
+        "calculation": "from http://loinc.org 29463-7",
+        "timestamp": "2019-10-19T00:00:00Z",
+        "certitude": 2
+    }]
+    
+def test_api_weight_unit_g():
+    result = query("1000", "LOINC:29463-7", "g")
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": 99900,
+        "quantity": {'code': 'kg', 'system': 'http://unitsofmeasure.org', 'unit': 'kg', 'value': 99.9},
+        "calculation": "from http://loinc.org 29463-7",
+        "timestamp": "2019-10-19T00:00:00Z",
+        "certitude": 2
+    }]
+    
+def test_api_weight_unit_wrong():
+    result = query("1000", "LOINC:29463-7", "wrong")
+    print(result.content)
+    assert result.status_code == 500
+                
+    assert result.json() == "'wrong' is not defined in the unit registry"
+    
 def test_api_bleeding():
     result = query("1000", "HP:0001892")
     print(result.content)

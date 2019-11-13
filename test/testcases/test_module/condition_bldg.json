@@ -1,0 +1,39 @@
+{
+  "resourceType": "Condition",
+  "id": "xx9999",
+  "meta": {
+    "versionId": "1",
+    "lastUpdated": "9999-00-00T00:00:00.000+00:00",
+    "source": "#99999xx999"
+  },
+  "category": [
+    {
+      "coding": [
+        {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/valueset-definition",
+              "valueString": "An item on a problem list that can be managed over time and can be expressed by a practitioner (e.g. physician, nurse), patient, or related person."
+            }
+          ],
+          "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+          "code": "problem-list-item",
+          "display": "Problem List Item"
+        }
+      ]
+    }
+  ],
+  "code": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "T85.830",
+        "display": "Hemorrhage due to nervous system prosthetic devices, implants, and grafts"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/xx9999",
+    "display": "Firstname Lastname"
+  }
+}

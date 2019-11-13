@@ -1,0 +1,39 @@
+{
+  "resourceType": "Condition",
+  "id": "99999",
+  "meta": {
+    "versionId": "1",
+    "lastUpdated": "0000-99-99T99:00:00.000+00:00",
+    "source": "#99999xxx99"
+  },
+  "category": [
+    {
+      "coding": [
+        {
+          "extension": [
+            {
+              "url": "http://hl7.org/fhir/StructureDefinition/valueset-definition",
+              "valueString": "An item on a problem list that can be managed over time and can be expressed by a practitioner (e.g. physician, nurse), patient, or related person."
+            }
+          ],
+          "system": "http://terminology.hl7.org/CodeSystem/condition-category",
+          "code": "problem-list-item",
+          "display": "Problem List Item"
+        }
+      ]
+    }
+  ],
+  "code": {
+    "coding": [
+      {
+        "system": "http://hl7.org/fhir/sid/icd-10-cm",
+        "code": "E11.2",
+        "display": "Type 2 diabetes mellitus with kidney complications"
+      }
+    ]
+  },
+  "subject": {
+    "reference": "Patient/00000",
+    "display": "John Doe"
+  }
+}

@@ -87,6 +87,8 @@ def query_records(records, codes, unit, timestamp):
                 v = convert(v, u, unit)
                 if isinstance(v, Left):
                     return v
+                else:
+                    v = v.value
         else:
             v = True
         return Right({
@@ -135,7 +137,7 @@ def weight(patient_id, unit, timestamp, plugin):
 	        "code":"29463-7",
 	        "is_regex": False
 	    }
-        ], unit, timestamp, unit))
+        ], unit, timestamp))
 
 
 def bmi(patient_id, unit, timestamp, plugin):
