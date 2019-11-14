@@ -44,7 +44,7 @@ def calculation_template(clinical_variable, resource_name, timestamp_today, reco
         record_timestamp_name = key(record)
         timestamp = f" (Date computed from FHIR resource '{resource_name}', field>'{record_timestamp_name}' = '{timestamp_record}');"
     else:
-        timestamp = " (no timestamp)"
+        timestamp = " (record has no timestamp)"
     vq = record.get("valueQuantity")
     if vq is None:
         from_value = ""
