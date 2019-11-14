@@ -34,7 +34,7 @@ def key(a):
         
 
 def calculation(codes):
-    return "from " + ",".join(list(map(lambda a: a["system"] + " " + a["code"], codes)))
+    return ",".join(list(map(lambda a: a["system"] + " " + a["code"], codes)))
 
 
 def calculation_template(clinical_variable, resource_name, timestamp_today, record, to_unit=None):
@@ -61,7 +61,7 @@ def calculation_template(clinical_variable, resource_name, timestamp_today, reco
         else:
             unit = ""
         from_value = f", field>'valueQuantity'field>'value' = '{value}'{unit}"
-    return f"current as of {timestamp_today}.{timestamp} '{clinical_variable}' computed from FHIR resource '{resource_name}' {from_code}{from_value}."
+    return f"current as of {timestamp_today}.{timestamp} '{clinical_variable}' computed from FHIR resource '{resource_name}' code {from_code}{from_value}."
 
 
 def query_records(records, codes, unit, timestamp, clinical_variable, resource_name):
@@ -84,10 +84,11 @@ def query_records(records, codes, unit, timestamp, clinical_variable, resource_n
                     if (is_regex and re.search(code, "^" + c2["code"] + "$")) or c2["code"] == code:
                         records_filtered.append(record)
     if len(records_filtered) == 0:
+        from_code = calculation(codes) 
         return Right({
             "value": None,
             "certitude": 0,
-            "calculation": calculation(codes) 
+            "calculation": f"no record found code {from_code}"
         })
     else:
         ts = strtots(timestamp)
@@ -269,7 +270,7 @@ def demographic_extension(url):
                         return {
                             "value": None,
                             "certitude": 0,
-                            "calculation": "extension not found"
+                            "calculation": f"extension not found url {url}"
                         }
                     else:
                         certitude = 2
