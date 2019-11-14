@@ -1,4 +1,5 @@
-from .utils import tstostr, strtots, unbundle, strtodate
+from .utils import unbundle
+from tx.dateutils.utils import tstostr, strtots, strtodate
 from datetime import datetime, date
 import os
 import requests
@@ -164,11 +165,12 @@ def age(patient_id, unit, timestamp, plugin):
             if "birthDate" in patient:
                 birth_date = patient["birthDate"]
                 date_of_birth = datetime.strptime(birth_date, "%Y-%m-%d")
+                today = strtodate(timestamp).strftime("%Y-%m-%d")
                 mage = calculate_age2(date_of_birth, timestamp)
                 return mage.map(lambda age: {
                     "value": age,
                     "certitude": 2,
-                    "calculation": "birthDate"
+                    "calculation": f"Current date '{today}' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '{birth_date}')"
                 })
             else:
                 return Right({

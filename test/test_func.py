@@ -97,7 +97,7 @@ def test_api_age():
                 
     assert result.json() == [{
         "value": 10,
-        "calculation": "birthDate",
+        "calculation": "Current date '2019-10-19' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '2009-01-01')",
         "certitude": 2
     }]
     
@@ -130,7 +130,7 @@ def test_api_age_unit_year():
                 
     assert result.json() == [{
         "value": 10,
-        "calculation": "birthDate",
+        "calculation": "Current date '2019-10-19' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '2009-01-01')",
         "certitude": 2
     }]
     
