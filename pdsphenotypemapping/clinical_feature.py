@@ -228,12 +228,19 @@ def sex(patient_id, unit, timestamp, plugin):
                 "calculation": "record not found"            
             }
         else:
-            patient_gender = patient["gender"]
-            return {
-                "value": patient_gender,
-                "certitude": 2,
-                "calculation": "FHIR resource 'Patient' field>'gender' = {patient_gender}"
-            }
+            gender = patient.get("gender")
+            if gender is None:
+                return {
+                    "value": None,
+                    "certitude": 0,
+                    "calculation": "gender not set"
+                }
+            else:
+                return {
+                    "value": gender,
+                    "certitude": 2,
+                    "calculation": f"FHIR resource 'Patient' field>'gender' = {gender}"
+                }
     return mpatient.map(calculate_sex)
 
 

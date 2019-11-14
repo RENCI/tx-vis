@@ -1,6 +1,7 @@
 patients = {
     "1000": {
-        "birthDate": "2009-01-01"
+        "birthDate": "2009-01-01",
+        "gender": "male"
     },
     "1001": {
         # "birthDate": "2009-01-01"

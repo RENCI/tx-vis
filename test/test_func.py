@@ -148,6 +148,42 @@ def test_api_age_unit_wrong():
     assert result.json() == "unsupported unit wrong"
 
     
+def test_api_sex():
+    result = query("1000", "LOINC:21840-4")
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": "male",
+        "calculation": "FHIR resource 'Patient' field>'gender' = male",
+        "certitude": 2
+    }]
+
+    
+def test_api_sex_no_field():
+    result = query("1001", "LOINC:21840-4")
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": None,
+        "calculation": "gender not set",
+        "certitude": 0
+    }]
+
+    
+def test_api_sex_no_record():
+    result = query("2000", "LOINC:21840-4")
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": None,
+        "calculation": "record not found",
+        "certitude": 0
+    }]
+
+    
 def test_api_serum_creatinine():
     result = query("1000", "LOINC:2160-0")
     print(result.content)
