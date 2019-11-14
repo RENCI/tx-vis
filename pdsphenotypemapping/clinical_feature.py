@@ -17,7 +17,54 @@ def pdsdpi_url_base(plugin):
     return f"http://{pds_host}:{pds_port}/v1/plugin/{plugin}"
 
 
-def query_records(records, codes, unit, timestamp):
+def extract_key(a):
+    if "effectiveInstant" in a:
+        return a["effectiveInstant"]
+    if "onsetDateTime" in a:
+        return a["onsetDateTime"]
+    return None
+    
+
+def key(a):
+    if "effectiveInstant" in a:
+        return "effectiveInstant"
+    if "onsetDateTime" in a:
+        return "onsetDateTime"
+    return None
+        
+
+def calculation(codes):
+    return "from " + ",".join(list(map(lambda a: a["system"] + " " + a["code"], codes)))
+
+
+def calculation_template(clinical_variable, resource_name, timestamp_today, record, to_unit=None):
+    from_code = calculation(record["code"]["coding"])
+    timestamp_record = extract_key(record)
+    if timestamp_record is not None:
+        record_timestamp_name = key(record)
+        timestamp = f" (Date computed from FHIR resource '{resource_name}', field>'{record_timestamp_name}' = '{timestamp_record}');"
+    else:
+        timestamp = " (no timestamp)"
+    vq = record.get("valueQuantity")
+    if vq is None:
+        from_value = ""
+    else:
+        value = vq["value"]
+        from_unit = vq.get("unit")
+        if from_unit is not None:
+            def unit_eq(a, b):
+                return a == b
+            if to_unit is not None and not unit_eq(to_unit, from_unit):
+                unit = f", 'unit'>'{from_unit}' converted to {to_unit}"
+            else:
+                unit = f", 'unit'>'{from_unit}'"
+        else:
+            unit = ""
+        from_value = f", field>'valueQuantity'field>'value' = '{value}'{unit}"
+    return f"current as of {timestamp_today}.{timestamp} '{clinical_variable}' computed from FHIR resource '{resource_name}' {from_code}{from_value}."
+
+
+def query_records(records, codes, unit, timestamp, clinical_variable, resource_name):
     if records == None:
         return Right({
             "value": None,
@@ -25,16 +72,6 @@ def query_records(records, codes, unit, timestamp):
             "calculation": "no record found"
         })
 
-    def calculation(codes):
-        return "from " + ",".join(list(map(lambda a: a["system"] + " " + a["code"], codes)))
-
-    def extract_key(a):
-        if "effectiveInstant" in a:
-            return a["effectiveInstant"]
-        if "onsetDateTime" in a:
-            return a["onsetDateTime"]
-        return None
-    
     records_filtered = []
     for record in records:
         for c in codes:  
@@ -62,7 +99,6 @@ def query_records(records, codes, unit, timestamp):
                 return abs(strtots(ext_key) - ts)
         record = min(records_filtered, key = key)
         keyr = extract_key(record)
-        c = calculation(record["code"]["coding"])
         if keyr is None:
             ts = None
             cert = 1
@@ -80,6 +116,7 @@ def query_records(records, codes, unit, timestamp):
                 v = v.value
         else:
             v = True
+        c = calculation_template(clinical_variable, resource_name, timestamp, record, to_unit=unit)
         return Right({
             "value": v,
             "quantity": vq,
@@ -115,7 +152,7 @@ def height(patient_id, unit, timestamp, plugin):
 	        "code":"8302-2",
 	        "is_regex": False
 	    }
-        ], unit, timestamp))
+        ], unit, timestamp, "height", "Observation"))
 
 
 def weight(patient_id, unit, timestamp, plugin):
@@ -126,7 +163,7 @@ def weight(patient_id, unit, timestamp, plugin):
 	        "code":"29463-7",
 	        "is_regex": False
 	    }
-        ], unit, timestamp))
+        ], unit, timestamp, "weight", "Observation"))
 
 
 def bmi(patient_id, unit, timestamp, plugin):
@@ -137,7 +174,7 @@ def bmi(patient_id, unit, timestamp, plugin):
 	        "code":"39156-5",
 	        "is_regex": False
 	    }
-        ], unit, timestamp))
+        ], unit, timestamp, "bmi", "Observation"))
     
 
 def calculate_age2(born, timestamp):
@@ -191,10 +228,11 @@ def sex(patient_id, unit, timestamp, plugin):
                 "calculation": "record not found"            
             }
         else:
+            patient_gender = patient["gender"]
             return {
-                "value": patient["gender"],
+                "value": patient_gender,
                 "certitude": 2,
-                "calculation": "gender"
+                "calculation": "FHIR resource 'Patient' field>'gender' = {patient_gender}"
             }
     return mpatient.map(calculate_sex)
 
@@ -269,7 +307,7 @@ def serum_creatinine(patient_id, unit, timestamp, plugin):
 	    "code":"2160-0",
 	    "is_regex": False
 	}
-    ], unit, timestamp))
+    ], unit, timestamp, "serum creatinine", "Observation"))
 
 
 def pregnancy(patient_id, unit, timestamp, plugin):
@@ -280,7 +318,7 @@ def pregnancy(patient_id, unit, timestamp, plugin):
             "code":"^Z34\\.",
             "is_regex": True
         }
-    ], unit, timestamp))
+    ], unit, timestamp, "pregnancy", "Condition"))
 
 
 def bleeding(patient_id, unit, timestamp, plugin):
@@ -536,7 +574,7 @@ def bleeding(patient_id, unit, timestamp, plugin):
             "code":"R58\\..*",
             "is_regex":True,
         }
-    ], unit, timestamp))
+    ], unit, timestamp, "bleeding", "Condition"))
 
 
 def kidney_dysfunction(patient_id, unit, timestamp, plugin):
@@ -794,7 +832,7 @@ def kidney_dysfunction(patient_id, unit, timestamp, plugin):
             "is_regex":True,
 	    
         }
-    ], unit, timestamp))
+    ], unit, timestamp, "kidney dysfunction", "Condition"))
 
 
 mapping = {
