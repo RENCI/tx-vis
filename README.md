@@ -41,6 +41,7 @@ dict format:
   "value": <value>,
   "certitude": <certitude>, # 0 uncertain 1 somewhat certain 2 certain
   "calculation": <calculation> # string explanation
+  "unit": <unit> # optional unit
   "timestamp": <timestamp>, # optional timestamp of the record in ISO 8601 format
 }
 ```
