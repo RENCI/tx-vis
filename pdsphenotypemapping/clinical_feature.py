@@ -120,7 +120,6 @@ def query_records(records, codes, unit, timestamp, clinical_variable, resource_n
         c = calculation_template(clinical_variable, resource_name, timestamp, record, to_unit=unit)
         return Right({
             "value": v,
-            "quantity": vq,
             "certitude": cert,
             "timestamp": ts,
             "calculation": c

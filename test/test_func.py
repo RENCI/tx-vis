@@ -191,7 +191,6 @@ def test_api_serum_creatinine():
                 
     assert result.json() == [{
         "value": 95,
-        "quantity": {'code': '%', 'system': 'http://unitsofmeasure.org', 'unit': '%', 'value': 95},
         "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'%'.",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2
@@ -205,7 +204,6 @@ def test_api_serum_creatinine_no_timestamp():
                 
     assert result.json() == [{
         "value": 95,
-        "quantity": {'code': '%', 'system': 'http://unitsofmeasure.org', 'unit': '%', 'value': 95},
         "calculation": "current as of 2019-10-19T00:00:00Z. (record has no timestamp) 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'%'.",
         "timestamp": None,
         "certitude": 1
@@ -231,7 +229,6 @@ def test_api_weight():
                 
     assert result.json() == [{
         "value": 99.9,
-        "quantity": {'code': 'kg', 'system': 'http://unitsofmeasure.org', 'unit': 'kg', 'value': 99.9},
         "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg'.",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2
@@ -245,7 +242,6 @@ def test_api_weight_no_timestamp():
                 
     assert result.json() == [{
         "value": 99.9,
-        "quantity": {'code': 'kg', 'system': 'http://unitsofmeasure.org', 'unit': 'kg', 'value': 99.9},
         "calculation": "current as of 2019-10-19T00:00:00Z. (record has no timestamp) 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg'.",
         "timestamp": None,
         "certitude": 1
@@ -271,7 +267,6 @@ def test_api_weight_unit_kg():
                 
     assert result.json() == [{
         "value": 99.9,
-        "quantity": {'code': 'kg', 'system': 'http://unitsofmeasure.org', 'unit': 'kg', 'value': 99.9},
         "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg'.",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2
@@ -285,7 +280,6 @@ def test_api_weight_unit_g():
                 
     assert result.json() == [{
         "value": 99900,
-        "quantity": {'code': 'kg', 'system': 'http://unitsofmeasure.org', 'unit': 'kg', 'value': 99.9},
         "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg' converted to g.",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2
@@ -307,7 +301,6 @@ def test_api_bleeding():
                 
     assert result.json() == [{
         "value": True,
-        "quantity": None,
         "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Condition', field>'onsetDateTime' = '2019-10-19T00:00:00Z'); 'bleeding' computed from FHIR resource 'Condition' code http://hl7.org/fhir/sid/icd-10-cm I60.0011.",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2
@@ -321,7 +314,6 @@ def test_api_bleeding_no_timestamp():
                 
     assert result.json() == [{
         "value": True,
-        "quantity": None,
         "calculation": "current as of 2019-10-19T00:00:00Z. (record has no timestamp) 'bleeding' computed from FHIR resource 'Condition' code http://hl7.org/fhir/sid/icd-10-cm I60.0011.",
         "timestamp": None,
         "certitude": 1
