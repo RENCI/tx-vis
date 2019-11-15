@@ -38,7 +38,7 @@ dict format:
 ```
 {
   "value": <value>,
-  "code": <code> # optional FHIR CodeableConcept
+  "concept": <code> # optional FHIR CodeableConcept
   "quantity": <quantity>, # optional FHIR Quantity
   "certitude": <certitude>, # 0 uncertain 1 somewhat certain 2 certain
   "timestamp": <timestamp>, # optional timestamp of the record
