@@ -109,17 +109,19 @@ def query_records(records, codes, unit, timestamp, clinical_variable, resource_n
         vq = record.get("valueQuantity")
         if vq is not None:
             v = vq["value"]
-            u = vq.get("unit")
-            v = convert(v, u, unit)
-            if isinstance(v, Left):
-                return v
+            from_u = vq.get("unit")
+            mv = convert(v, from_u, unit)
+            if isinstance(mv, Left):
+                return mv
             else:
-                v = v.value
+                v = mv.value
         else:
             v = True
+            from_u = None
         c = calculation_template(clinical_variable, resource_name, timestamp, record, to_unit=unit)
         return Right({
             "value": v,
+            **({"unit": unit} if unit is not None else {"unit": from_u} if from_u is not None else {}),
             "certitude": cert,
             "timestamp": ts,
             "calculation": c
@@ -206,6 +208,7 @@ def age(patient_id, unit, timestamp, plugin):
                 mage = calculate_age2(date_of_birth, timestamp)
                 return mage.map(lambda age: {
                     "value": age,
+                    "unit": "year",
                     "certitude": 2,
                     "calculation": f"Current date '{today}' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '{birth_date}')"
                 })
