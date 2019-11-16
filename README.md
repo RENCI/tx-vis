@@ -22,20 +22,24 @@ docker-compose -f docker-compose.yml -f test/docker-compose.yml -f test/pds-serv
 ```
 
 ### how to add new mapper
+In the following, `any` is any json serializable type.
+
 `pdsphenotypemapping/clinical_feature.py`
 
-in the `mapping` dict, add your entry
+In the `mapping` dict, add your entry
 
-each entry is a pair of a function for retrieving data and a function for mapping data
+Each entry is a pair of a function for retrieving data and a function for mapping data
 
-the function for retrieving data should have the following signature:
+
+The function for retrieving data should have the following signature:
+
 ```
 string * # patient id
 string -> # data provider plugin id 
 Either any any # data for the function for mapping data
 ```
 
-utility functions for retrieving data
+Utility functions for retrieving data
 
 ```
 get_observation:
@@ -58,7 +62,7 @@ str -> # data provider plugin id
 Either any dict # Left for error Right for no error. return an patient resource or None if patient doesn't exists
 ```
 
-the function for mapping data should have the following signature:
+The function for mapping data should have the following signature:
 
 ```
 any # data from the function for retrieving data
@@ -66,7 +70,9 @@ str * # unit to convert to, None if no unit or no conversion
 str * # timestamp for getting the mapping
 Either any dict # Left for error Right for no error. return a dict
 ```
-dict format:
+
+Dict format:
+
 ```
 {
   "value": <value>,
@@ -76,8 +82,6 @@ dict format:
   "timestamp": <timestamp>, # optional timestamp of the record in ISO 8601 format
 }
 ```
-
-
 
 The Either type is from the [OSlash](https://github.com/dbrattli/OSlash) library.
 
