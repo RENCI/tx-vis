@@ -64,7 +64,7 @@ the function for mapping data should have the following signature:
 any # data from the function for retrieving data
 str * # unit to convert to, None if no unit or no conversion
 str * # timestamp for getting the mapping
-Either dict dict # Left for error Right for no error. return a dict
+Either any dict # Left for error Right for no error. return a dict
 ```
 dict format:
 ```
