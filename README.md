@@ -29,10 +29,8 @@ in the `mapping` dict, add your entry
 the function should have the following signature:
 
 ```
-str * # patient_id 
 str * # unit to convert to, None if no unit or no conversion
 str * # timestamp for getting the mapping
-str -> # data provider plugin id
 Either dict dict # Left for error Right for no error. return a dict
 ```
 dict format:
