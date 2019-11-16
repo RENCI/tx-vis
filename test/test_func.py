@@ -92,6 +92,16 @@ def query(pid, cv, unit=None):
     return requests.post(f"http://pdsphenotypemapping:8080/mapping?patient_id={pid}&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_id=dpi", headers=json_headers, json=[q])
 
 
+def query_from_data(pid, cv, data, unit=None):
+    q = {
+        "clinical_feature_variable": cv
+    }
+    if unit is not None:
+        q["unit"] = unit
+    q["data"] = data
+    return requests.post(f"http://pdsphenotypemapping:8080/mappingFromRecords?timestamp=2019-10-19T00:00:00Z", headers=json_headers, json=[q])
+
+
 def test_api_age():
     result = query("1000", "LOINC:30525-0")
     print(result.content)
@@ -588,4 +598,63 @@ def test_api_bleeding_no_record():
             }
         ])),
         "certitude": 0
+    }]
+
+
+def test_api_age_from_data():
+    result = query_from_data("1000", "LOINC:30525-0", {"birthDate":"2009-01-01"})
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": 10,
+        "unit": "year",
+        "calculation": "Current date '2019-10-19' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '2009-01-01')",
+        "certitude": 2
+    }]
+
+    
+def test_api_sex_from_data():
+    result = query_from_data("1000", "LOINC:21840-4", {"gender": "male"})
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": "male",
+        "calculation": "FHIR resource 'Patient' field>'gender' = male",
+        "certitude": 2
+    }]
+
+def test_api_serum_creatinine_from_data():
+    result = query_from_data("1000", "LOINC:2160-0", [{
+                "resourceType": "Observation",
+                "subject": {
+                    "reference": "Patient/1000"
+                },
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "2160-0",
+                            "display": "Creatinine [Mass/volume] in Serum or Plasma"
+                        }
+                    ]
+                },
+                "effectiveInstant": "2019-10-19T00:00:00Z",
+                "valueQuantity": {
+                    "value": 95,
+                    "unit": "%",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "%"
+                }
+    }])
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": 95,
+        "unit": "%",
+        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'%'.",
+        "timestamp": "2019-10-19T00:00:00Z",
+        "certitude": 2
     }]

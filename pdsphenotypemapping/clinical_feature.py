@@ -145,38 +145,34 @@ def get_patient(patient_id, plugin):
     else:
         return resp
 
-
-def height(patient_id, unit, timestamp, plugin):
-    mrecords = get_observation(patient_id, plugin)
-    return mrecords.bind(lambda records: query_records(records, [
+def height(records, unit, timestamp):
+    return query_records(records, [
 	    {
 	        "system":"http://loinc.org",
 	        "code":"8302-2",
 	        "is_regex": False
 	    }
-        ], unit, timestamp, "height", "Observation"))
+        ], unit, timestamp, "height", "Observation")
 
 
-def weight(patient_id, unit, timestamp, plugin):
-    mrecords = get_observation(patient_id, plugin)
-    return mrecords.bind(lambda records: query_records(records, [
+def weight(records, unit, timestamp):
+    return query_records(records, [
 	    {
 	        "system":"http://loinc.org",
 	        "code":"29463-7",
 	        "is_regex": False
 	    }
-        ], unit, timestamp, "weight", "Observation"))
+        ], unit, timestamp, "weight", "Observation")
 
 
-def bmi(patient_id, unit, timestamp, plugin):
-    mrecords = get_observation(patient_id, plugin)
-    return mrecords.bind(lambda records: query_records(records, [
+def bmi(records, unit, timestamp):
+    return query_records(records, [
 	    {
 	        "system":"http://loinc.org",
 	        "code":"39156-5",
 	        "is_regex": False
 	    }
-        ], unit, timestamp, "bmi", "Observation"))
+        ], unit, timestamp, "bmi", "Observation")
     
 
 def calculate_age2(born, timestamp):
@@ -189,62 +185,57 @@ def calculate_age2(born, timestamp):
     return Right(today.year - born.year - ((today.month, today.day) < (born.month, born.day)))
 
 
-def age(patient_id, unit, timestamp, plugin):
+def age(patient, unit, timestamp):
     if unit is not None and unit != "year":
         return Left((f"unsupported unit {unit}", 403))
-    mpatient = get_patient(patient_id, plugin)
-    def calculate_age(patient):
-        if patient == None:
+
+    if patient == None:
+        return Right({
+            "value": None,
+            "certitude": 0,
+            "calculation": "record not found"            
+        })
+    else:
+        if "birthDate" in patient:
+            birth_date = patient["birthDate"]
+            date_of_birth = datetime.strptime(birth_date, "%Y-%m-%d")
+            today = strtodate(timestamp).strftime("%Y-%m-%d")
+            mage = calculate_age2(date_of_birth, timestamp)
+            return mage.map(lambda age: {
+                "value": age,
+                "unit": "year",
+                "certitude": 2,
+                "calculation": f"Current date '{today}' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '{birth_date}')"
+            })
+        else:
             return Right({
                 "value": None,
                 "certitude": 0,
-                "calculation": "record not found"            
+                "calculation": "birthDate not set"
             })
-        else:
-            if "birthDate" in patient:
-                birth_date = patient["birthDate"]
-                date_of_birth = datetime.strptime(birth_date, "%Y-%m-%d")
-                today = strtodate(timestamp).strftime("%Y-%m-%d")
-                mage = calculate_age2(date_of_birth, timestamp)
-                return mage.map(lambda age: {
-                    "value": age,
-                    "unit": "year",
-                    "certitude": 2,
-                    "calculation": f"Current date '{today}' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '{birth_date}')"
-                })
-            else:
-                return Right({
-                    "value": None,
-                    "certitude": 0,
-                    "calculation": "birthDate not set"
-                })
-    return mpatient.bind(calculate_age)
 
 
-def sex(patient_id, unit, timestamp, plugin):
-    mpatient = get_patient(patient_id, plugin)
-    def calculate_sex(patient):
-        if patient == None:
-            return {
+def sex(patient, unit, timestamp):
+    if patient == None:
+        return Right({
+            "value": None,
+            "certitude": 0,
+            "calculation": "record not found"            
+        })
+    else:
+        gender = patient.get("gender")
+        if gender is None:
+            return Right({
                 "value": None,
                 "certitude": 0,
-                "calculation": "record not found"            
-            }
+                "calculation": "gender not set"
+            })
         else:
-            gender = patient.get("gender")
-            if gender is None:
-                return {
-                    "value": None,
-                    "certitude": 0,
-                    "calculation": "gender not set"
-                }
-            else:
-                return {
-                    "value": gender,
-                    "certitude": 2,
-                    "calculation": f"FHIR resource 'Patient' field>'gender' = {gender}"
-                }
-    return mpatient.map(calculate_sex)
+            return Right({
+                "value": gender,
+                "certitude": 2,
+                "calculation": f"FHIR resource 'Patient' field>'gender' = {gender}"
+            })
 
 
 def demographic_extension(url):
@@ -309,31 +300,28 @@ race = demographic_extension("http://hl7.org/fhir/StructureDefinition/us-core-ra
 ethnicity = demographic_extension("http://hl7.org/fhir/StructureDefinition/us-core-ethnicity")
 
 
-def serum_creatinine(patient_id, unit, timestamp, plugin):
-    mrecords = get_observation(patient_id, plugin)
-    return mrecords.bind(lambda records: query_records(records, [
+def serum_creatinine(records, unit, timestamp):
+    return query_records(records, [
 	{
 	    "system":"http://loinc.org",
 	    "code":"2160-0",
 	    "is_regex": False
 	}
-    ], unit, timestamp, "serum creatinine", "Observation"))
+    ], unit, timestamp, "serum creatinine", "Observation")
 
 
-def pregnancy(patient_id, unit, timestamp, plugin):
-    mrecords = get_condition(patient_id, plugin)
-    return mrecords.bind(lambda records: query_records(records, [
+def pregnancy(records, unit, timestamp):
+    return query_records(records, [
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
             "code":"^Z34\\.",
             "is_regex": True
         }
-    ], unit, timestamp, "pregnancy", "Condition"))
+    ], unit, timestamp, "pregnancy", "Condition")
 
 
-def bleeding(patient_id, unit, timestamp, plugin):
-    mrecords = get_condition(patient_id, plugin)
-    return mrecords.bind(lambda records: query_records(records, [
+def bleeding(records, unit, timestamp):
+    return query_records(records, [
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
             "code":"I60\\..*",
@@ -584,12 +572,11 @@ def bleeding(patient_id, unit, timestamp, plugin):
             "code":"R58\\..*",
             "is_regex":True,
         }
-    ], unit, timestamp, "bleeding", "Condition"))
+    ], unit, timestamp, "bleeding", "Condition")
 
 
-def kidney_dysfunction(patient_id, unit, timestamp, plugin):
-    mrecords = get_condition(patient_id, plugin)
-    return mrecords.bind(lambda records: query_records(records, [
+def kidney_dysfunction(records, unit, timestamp):
+    return query_records(records, [
         {
             "system":"http://hl7.org/fhir/sid/icd-10-cm",
             "code":"N00\\..*",
@@ -842,19 +829,19 @@ def kidney_dysfunction(patient_id, unit, timestamp, plugin):
             "is_regex":True,
 	    
         }
-    ], unit, timestamp, "kidney dysfunction", "Condition"))
+    ], unit, timestamp, "kidney dysfunction", "Condition")
 
 
 mapping = {
-    "LOINC:2160-0": serum_creatinine, # serum creatinine
-    "LOINC:82810-3": pregnancy, # pregnancy
-    "HP:0001892": bleeding, # bleeding
-    "HP:0000077": kidney_dysfunction, # kidney dysfunction
-    "LOINC:30525-0": age,
-    "LOINC:54134-2": race,
-    "LOINC:54120-1": ethnicity,
-    "LOINC:21840-4": sex,
-    "LOINC:8302-2": height,
-    "LOINC:29463-7": weight,
-    "LOINC:39156-5": bmi
+    "LOINC:2160-0": (get_observation, serum_creatinine), # serum creatinine
+    "LOINC:82810-3": (get_condition, pregnancy), # pregnancy
+    "HP:0001892": (get_condition, bleeding), # bleeding
+    "HP:0000077": (get_condition, kidney_dysfunction), # kidney dysfunction
+    "LOINC:30525-0": (get_patient, age),
+    "LOINC:54134-2": (get_patient, race),
+    "LOINC:54120-1": (get_patient, ethnicity),
+    "LOINC:21840-4": (get_patient, sex),
+    "LOINC:8302-2": (get_observation, height),
+    "LOINC:29463-7": (get_observation, weight),
+    "LOINC:39156-5": (get_observation, bmi)
 }

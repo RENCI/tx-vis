@@ -54,6 +54,33 @@ paths:
           description: Invalid input
         '500':
           description: Internal server error
+  /mappingFromRecords:
+    post:
+      summary: Add patient record directory, patient_id, system and diagnosis code
+      operationId: api.mappingClinicalFromData
+      parameters:
+        - in: query
+          name: timestamp
+          schema:
+            type: string
+            format: date-time
+          required: true
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ClinicalFeatureVariableAndDatas"
+      responses: # has to match output of dispatcher.py
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mappings'
+        '405':
+          description: Invalid input
+        '500':
+          description: Internal server error
 components:
   schemas:
     ClinicalFeatureVariables:
@@ -70,6 +97,22 @@ components:
       required:
         - clinical_feature_variable
       additionalProperties: false
+    ClinicalFeatureVariableAndDatas:
+      type: array
+      items:
+        $ref: "#/components/schemas/ClinicalFeatureVariableAndData"
+    ClinicalFeatureVariableAndData:
+      type: object
+      properties:
+        clinical_feature_variable:
+          type: string
+        unit:
+          type: string
+        data: {}
+      required:
+        - clinical_feature_variable
+      additionalProperties: false
+
     Mappings:
       type: array
       items:
@@ -85,7 +128,6 @@ components:
         timestamp:
           type: string
           format: date-time
-        quantity: {}
       required:
         - value
         - calculation
