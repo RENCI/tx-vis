@@ -625,6 +625,7 @@ def test_api_sex_from_data():
         "certitude": 2
     }]
 
+    
 def test_api_serum_creatinine_from_data():
     result = query_from_data("1000", "LOINC:2160-0", [{
         "resourceType": "Observation",
