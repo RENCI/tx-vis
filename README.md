@@ -35,7 +35,7 @@ string -> # data provider plugin id
 Either any any # data for the function for mapping data
 ```
 
-utility functions:
+utility functions for retrieving data
 
 ```
 get_observation:
