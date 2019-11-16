@@ -627,26 +627,26 @@ def test_api_sex_from_data():
 
 def test_api_serum_creatinine_from_data():
     result = query_from_data("1000", "LOINC:2160-0", [{
-                "resourceType": "Observation",
-                "subject": {
-                    "reference": "Patient/1000"
-                },
-                "code": {
-                    "coding": [
-                        {
-                            "system": "http://loinc.org",
-                            "code": "2160-0",
-                            "display": "Creatinine [Mass/volume] in Serum or Plasma"
-                        }
-                    ]
-                },
-                "effectiveInstant": "2019-10-19T00:00:00Z",
-                "valueQuantity": {
-                    "value": 95,
-                    "unit": "%",
-                    "system": "http://unitsofmeasure.org",
-                    "code": "%"
+        "resourceType": "Observation",
+        "subject": {
+            "reference": "Patient/1000"
+        },
+        "code": {
+            "coding": [
+                {
+                    "system": "http://loinc.org",
+                    "code": "2160-0",
+                    "display": "Creatinine [Mass/volume] in Serum or Plasma"
                 }
+            ]
+        },
+        "effectiveInstant": "2019-10-19T00:00:00Z",
+        "valueQuantity": {
+            "value": 95,
+            "unit": "%",
+            "system": "http://unitsofmeasure.org",
+            "code": "%"
+        }
     }])
     print(result.content)
     assert result.status_code == 200
