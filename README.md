@@ -32,7 +32,30 @@ the function for retrieving data should have the following signature:
 ```
 string * # patient id
 string -> # data provider plugin id 
-any # data for the function for mapping data
+Either any any # data for the function for mapping data
+```
+
+utility functions:
+
+```
+get_observation:
+str * # patient_id
+str -> # data provider plugin id
+Either any [dict] # Left for error Right for no error. return an array of observation resources
+```
+
+```
+get_condition:
+str * # patient_id
+str -> # data provider plugin id
+Either any [dict] # Left for error Right for no error. return an array of condition resources
+```
+
+```
+get_patient:
+str * # patient_id
+str -> # data provider plugin id
+Either any dict # Left for error Right for no error. return an patient resource or None if patient doesn't exists
 ```
 
 the function for mapping data should have the following signature:
@@ -58,25 +81,3 @@ dict format:
 
 The Either type is from the [OSlash](https://github.com/dbrattli/OSlash) library.
 
-utility functions:
-
-```
-get_observation:
-str * # patient_id
-str -> # data provider plugin id
-Either dict [dict] # Left for error Right for no error. return an array of observation resources
-```
-
-```
-get_condition:
-str * # patient_id
-str -> # data provider plugin id
-Either dict [dict] # Left for error Right for no error. return an array of condition resources
-```
-
-```
-get_patient:
-str * # patient_id
-str -> # data provider plugin id
-Either dict dict # Left for error Right for no error. return an patient resource or None if patient doesn't exists
-```
