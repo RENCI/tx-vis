@@ -34,8 +34,8 @@ Each entry is a pair of a function for retrieving data and a function for mappin
 The function for retrieving data should have the following signature:
 
 ```
-string * # patient id
-string -> # data provider plugin id 
+str * # patient id
+str -> # data provider plugin id 
 Either any any # data for the function for mapping data
 ```
 
