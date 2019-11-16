@@ -26,9 +26,19 @@ docker-compose -f docker-compose.yml -f test/docker-compose.yml -f test/pds-serv
 
 in the `mapping` dict, add your entry
 
-the function should have the following signature:
+each entry is a pair of a function for retrieving data and a function for mapping data
+
+the function for retrieving data should have the following signature:
+```
+string * # patient id
+string -> # data provider plugin id 
+any # data for the function for mapping data
+```
+
+the function for mapping data should have the following signature:
 
 ```
+any # data from the function for retrieving data
 str * # unit to convert to, None if no unit or no conversion
 str * # timestamp for getting the mapping
 Either dict dict # Left for error Right for no error. return a dict
