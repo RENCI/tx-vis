@@ -155,7 +155,7 @@ def test_api_age_unit_year():
 def test_api_age_unit_wrong():
     result = query("1000", "LOINC:30525-0", "wrong")
     print(result.content)
-    assert result.status_code == 403
+    assert result.status_code == 400
                 
     assert result.json() == "unsupported unit wrong"
 
@@ -203,8 +203,8 @@ def test_api_serum_creatinine():
                 
     assert result.json() == [{
         "value": 95,
-        "unit": "%",
-        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'%'.",
+        "unit": "mg/dL",
+        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2
     }]
@@ -217,8 +217,8 @@ def test_api_serum_creatinine_no_timestamp():
                 
     assert result.json() == [{
         "value": 95,
-        "unit": "%",
-        "calculation": "current as of 2019-10-19T00:00:00Z. (record has no timestamp) 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'%'.",
+        "unit": "mg/dL",
+        "calculation": "current as of 2019-10-19T00:00:00Z. (record has no timestamp) 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
         "timestamp": None,
         "certitude": 1
     }]
@@ -234,6 +234,53 @@ def test_api_serum_creatinine_no_record():
         "calculation": "no record found code http://loinc.org 2160-0",
         "certitude": 0
     }]
+
+    
+def test_api_no_code():
+    result = query("3000", "LOINC:2160-0")
+    print(result.content)
+    assert result.status_code == 500
+                
+    assert result.json() == {
+        "error": "malformated record: no code",
+        "record": {
+            "resourceType": "Observation",
+            "subject": {
+                "reference": "Patient/3000"
+            },
+            "effectiveInstant": "2019-10-19T00:00:00Z",
+            "valueQuantity": {
+                "value": 95,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+            }
+        }
+    }
+
+    
+def test_api_no_coding_under_code():
+    result = query("3001", "LOINC:2160-0")
+    print(result.content)
+    assert result.status_code == 500
+                
+    assert result.json() == {
+        "error": "malformated record: no coding under code",
+        "record": {
+            "resourceType": "Observation",
+            "subject": {
+                "reference": "Patient/3001"
+            },
+            "code": {},
+            "effectiveInstant": "2019-10-19T00:00:00Z",
+            "valueQuantity": {
+                "value": 95,
+                "unit": "mg/dL",
+                "system": "http://unitsofmeasure.org",
+                "code": "mg/dL"
+            }
+        }
+    }
 
     
 def test_api_weight():
@@ -299,6 +346,20 @@ def test_api_weight_unit_g():
         "value": 99900,
         "unit": "g",
         "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg' converted to g.",
+        "timestamp": "2019-10-19T00:00:00Z",
+        "certitude": 2
+    }]
+
+    
+def test_api_weight_unit_system_default():
+    result = query("5000", "LOINC:29463-7")
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": 99.9,
+        "unit": "kg",
+        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99900', 'unit'>'g' converted to kg.",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2
     }]
@@ -644,9 +705,9 @@ def test_api_serum_creatinine_from_data():
         "effectiveInstant": "2019-10-19T00:00:00Z",
         "valueQuantity": {
             "value": 95,
-            "unit": "%",
+            "unit": "mg/dL",
             "system": "http://unitsofmeasure.org",
-            "code": "%"
+            "code": "mg/dL"
         }
     }])
     print(result.content)
@@ -654,8 +715,8 @@ def test_api_serum_creatinine_from_data():
                 
     assert result.json() == [{
         "value": 95,
-        "unit": "%",
-        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'%'.",
+        "unit": "mg/dL",
+        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2
     }]

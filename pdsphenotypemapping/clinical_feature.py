@@ -37,7 +37,7 @@ def calculation(codes):
     return ",".join(list(map(lambda a: a["system"] + " " + a["code"], codes)))
 
 
-def calculation_template(clinical_variable, resource_name, timestamp_today, record, to_unit=None):
+def calculation_template(clinical_variable, resource_name, timestamp_today, record, to_unit):
     from_code = calculation(record["code"]["coding"])
     timestamp_record = extract_key(record)
     if timestamp_record is not None:
@@ -78,8 +78,20 @@ def query_records(records, codes, unit, timestamp, clinical_variable, resource_n
             system = c["system"]
             code = c["code"]
             is_regex = c["is_regex"]
-            
-            for c2 in record["code"]["coding"]: 
+
+            code2 = record.get("code")
+            if code2 is None:
+                return Left({
+                    "error": f"malformated record: no code",
+                    "record": record
+                })
+            coding2 = code2.get("coding")
+            if coding2 is None:
+                return Left({
+                    "error": f"malformated record: no coding under code",
+                    "record": record
+                })
+            for c2 in coding2: 
                 if c2["system"] == system:
                     if (is_regex and re.search(code, "^" + c2["code"] + "$")) or c2["code"] == code:
                         records_filtered.append(record)
@@ -118,7 +130,7 @@ def query_records(records, codes, unit, timestamp, clinical_variable, resource_n
         else:
             v = True
             from_u = None
-        c = calculation_template(clinical_variable, resource_name, timestamp, record, to_unit=unit)
+        c = calculation_template(clinical_variable, resource_name, timestamp, record, unit)
         return Right({
             "value": v,
             **({"unit": unit} if unit is not None else {"unit": from_u} if from_u is not None else {}),
@@ -187,7 +199,7 @@ def calculate_age2(born, timestamp):
 
 def age(patient, unit, timestamp):
     if unit is not None and unit != "year":
-        return Left((f"unsupported unit {unit}", 403))
+        return Left((f"unsupported unit {unit}", 400))
 
     if patient == None:
         return Right({
@@ -833,15 +845,15 @@ def kidney_dysfunction(records, unit, timestamp):
 
 
 mapping = {
-    "LOINC:2160-0": (get_observation, serum_creatinine), # serum creatinine
-    "LOINC:82810-3": (get_condition, pregnancy), # pregnancy
-    "HP:0001892": (get_condition, bleeding), # bleeding
-    "HP:0000077": (get_condition, kidney_dysfunction), # kidney dysfunction
-    "LOINC:30525-0": (get_patient, age),
-    "LOINC:54134-2": (get_patient, race),
-    "LOINC:54120-1": (get_patient, ethnicity),
-    "LOINC:21840-4": (get_patient, sex),
-    "LOINC:8302-2": (get_observation, height),
-    "LOINC:29463-7": (get_observation, weight),
-    "LOINC:39156-5": (get_observation, bmi)
+    "LOINC:2160-0": (get_observation, serum_creatinine, "mg/dL"), # serum creatinine
+    "LOINC:82810-3": (get_condition, pregnancy, None), # pregnancy
+    "HP:0001892": (get_condition, bleeding, None), # bleeding
+    "HP:0000077": (get_condition, kidney_dysfunction, None), # kidney dysfunction
+    "LOINC:30525-0": (get_patient, age, "year"),
+    "LOINC:54134-2": (get_patient, race, None),
+    "LOINC:54120-1": (get_patient, ethnicity, None),
+    "LOINC:21840-4": (get_patient, sex, None),
+    "LOINC:8302-2": (get_observation, height, "m"),
+    "LOINC:29463-7": (get_observation, weight, "kg"),
+    "LOINC:39156-5": (get_observation, bmi, "kg/m^2")
 }

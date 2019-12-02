@@ -22,9 +22,11 @@ def lookupClinicals(patient_id, timestamp, data_provider_plugin_id, clinical_fea
 
 
 def lookupClinical(patient_id, clinical, unit, timestamp, data_provider_plugin_id):
-    data, feature = mapping.get(clinical)
+    data, feature, unit2 = mapping.get(clinical)
+    if unit is None:
+        unit = unit2
     if feature is None:
-        return Left((f"cannot find mapping for {clinical}", 405))
+        return Left((f"cannot find mapping for {clinical}", 400))
     else:
         return data(patient_id, data_provider_plugin_id).bind(lambda records: feature(records, unit, timestamp))
     
@@ -36,9 +38,11 @@ def lookupClinicalsFromData(timestamp, clinical_feature_variables_and_units):
 
 
 def lookupClinicalFromRecord(data, clinical, unit, timestamp):
-    _, feature = mapping.get(clinical)
+    _, feature, unit2 = mapping.get(clinical)
+    if unit is None:
+        unit = unit2
     if feature is None:
-        return Left((f"cannot find mapping for {clinical}", 405))
+        return Left((f"cannot find mapping for {clinical}", 400))
     else:
         return feature(data, unit, timestamp)
     
