@@ -28,7 +28,7 @@ In the following, `any` is any json serializable type.
 
 In the `mapping` dict, add your entry
 
-Each entry is a pair of a function for retrieving data and a function for mapping data
+Each entry is a triple of a function for retrieving data, a function for mapping data, and the default unit
 
 
 The function for retrieving data should have the following signature:
