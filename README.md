@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/RENCI/pds-phenotype-mapping-plugin.svg?token=hSyYs1SXtzNJJDmjUzHi&branch=master)](https://travis-ci.com/RENCI/pds-phenotype-mapping-plugin)
+
 # pds-phenotype-mapping-plugin
 
 ### build docker image
