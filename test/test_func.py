@@ -351,6 +351,38 @@ def test_api_weight_unit_g():
     }]
 
     
+def test_api_weight_unit_code():
+    result = query_from_data("1000", "LOINC:29463-7", [{
+        "resourceType": "Observation",
+        "code": {
+            "coding": [
+                {
+                    "system": "http://loinc.org",
+                    "code": "29463-7"
+                }
+            ]
+        },
+        "subject": {
+            "reference": "Patient/1000"
+        },
+        "effectiveInstant": "2019-10-19T00:00:00Z",
+        "valueQuantity": {
+            "value": 99.9,
+            "code": "kg"
+        }
+    }])
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": 99.9,
+        "unit": "kg",
+        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'code'>'kg'.",
+        "timestamp": "2019-10-19T00:00:00Z",
+        "certitude": 2
+    }]
+
+    
 def test_api_weight_unit_system_default():
     result = query("5000", "LOINC:29463-7")
     print(result.content)

@@ -51,13 +51,18 @@ def calculation_template(clinical_variable, resource_name, timestamp_today, reco
     else:
         value = vq["value"]
         from_unit = vq.get("unit")
+        if from_unit is None:
+            from_unit = vq.get("code")
+            from_unit_from = "code"
+        else:
+            from_unit_from = "unit"
         if from_unit is not None:
             def unit_eq(a, b):
                 return a == b
             if to_unit is not None and not unit_eq(to_unit, from_unit):
-                unit = f", 'unit'>'{from_unit}' converted to {to_unit}"
+                unit = f", '{from_unit_from}'>'{from_unit}' converted to {to_unit}"
             else:
-                unit = f", 'unit'>'{from_unit}'"
+                unit = f", '{from_unit_from}'>'{from_unit}'"
         else:
             unit = ""
         from_value = f", field>'valueQuantity'field>'value' = '{value}'{unit}"
@@ -122,6 +127,8 @@ def query_records(records, codes, unit, timestamp, clinical_variable, resource_n
         if vq is not None:
             v = vq["value"]
             from_u = vq.get("unit")
+            if from_u is None:
+                from_u = vq.get("code")
             mv = convert(v, from_u, unit)
             if isinstance(mv, Left):
                 return mv
