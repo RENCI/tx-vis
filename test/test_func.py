@@ -351,7 +351,7 @@ def test_api_weight_unit_g():
     }]
 
     
-def test_api_weight_unit_from_data_code():
+def test_api_weight_unit_from_code_from_data():
     result = query_from_data("1000", "LOINC:29463-7", [{
         "resourceType": "Observation",
         "code": {
