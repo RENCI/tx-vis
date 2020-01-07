@@ -4,7 +4,7 @@ RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
 
 RUN apk --no-cache add gcc musl-dev
-RUN pip3 install --no-cache-dir flask gunicorn[gevent]==19.9.0 connexion python-dateutil oslash pint
+RUN pip3 install --no-cache-dir flask gunicorn[gevent]==19.9.0 connexion[swagger-ui] python-dateutil oslash pint
 
 COPY api /usr/src/app/api
 COPY pdsphenotypemapping /usr/src/app/pdsphenotypemapping

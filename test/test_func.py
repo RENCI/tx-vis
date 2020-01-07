@@ -752,3 +752,9 @@ def test_api_serum_creatinine_from_data():
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2
     }]
+
+    
+def test_ui():
+    resp = requests.get("http://pdsphenotypemapping:8080/ui")
+
+    assert resp.status_code == 200
