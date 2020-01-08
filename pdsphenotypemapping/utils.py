@@ -1,5 +1,9 @@
-    
+from oslash import Left, Right    
 
+def isBundle(bundle):
+    return isinstance(bundle, dict) and "resourceType" in bundle and bundle["resourceType"] == "Bundle"
+
+    
 def bundle(records):
     return {
         "resourceType": "Bundle",
@@ -10,6 +14,9 @@ def bundle(records):
 
 
 def unbundle(bundle):
-    return list(map(lambda a : a["resource"], bundle.get("entry", [])))
+    if isBundle(bundle):
+        return Right(list(map(lambda a : a["resource"], bundle.get("entry", []))))
+    else:
+        return Left(str(bundle) + " is not a bundle")
 
 

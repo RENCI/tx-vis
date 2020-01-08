@@ -149,12 +149,12 @@ def query_records(records, codes, unit, timestamp, clinical_variable, resource_n
 
 def get_observation(patient_id, plugin):
     resp = get(pdsdpi_url_base(plugin) + f"/Observation?patient={patient_id}")
-    return resp.map(lambda x : unbundle(x))
+    return resp.bind(unbundle)
 
 
 def get_condition(patient_id, plugin):
     resp = get(pdsdpi_url_base(plugin) + f"/Condition?patient={patient_id}")
-    return resp.map(lambda x : unbundle(x))
+    return resp.bind(unbundle)
 
 
 def get_patient(patient_id, plugin):
