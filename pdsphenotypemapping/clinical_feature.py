@@ -20,6 +20,8 @@ def pdsdpi_url_base(plugin):
 def extract_key(a):
     if "effectiveInstant" in a:
         return a["effectiveInstant"]
+    if "effectiveDateTime" in a:
+        return a["effectiveDateTime"]
     if "onsetDateTime" in a:
         return a["onsetDateTime"]
     return None
@@ -28,6 +30,8 @@ def extract_key(a):
 def key(a):
     if "effectiveInstant" in a:
         return "effectiveInstant"
+    if "effectiveDateTime" in a:
+        return "effectiveDateTime"
     if "onsetDateTime" in a:
         return "onsetDateTime"
     return None

@@ -754,6 +754,76 @@ def test_api_serum_creatinine_from_data():
     }]
 
     
+def test_api_serum_creatinine_from_data_effectiveDateTime():
+    result = query_from_data("1000", "LOINC:2160-0", [{
+        "resourceType": "Observation",
+        "subject": {
+            "reference": "Patient/1000"
+        },
+        "code": {
+            "coding": [
+                {
+                    "system": "http://loinc.org",
+                    "code": "2160-0",
+                    "display": "Creatinine [Mass/volume] in Serum or Plasma"
+                }
+            ]
+        },
+        "effectiveDateTime": "2019-10-19T00:00:00Z",
+        "valueQuantity": {
+            "value": 95,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+        }
+    }])
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": 95,
+        "unit": "mg/dL",
+        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveDateTime' = '2019-10-19T00:00:00Z'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
+        "timestamp": "2019-10-19T00:00:00Z",
+        "certitude": 2
+    }]
+
+    
+def test_api_serum_creatinine_from_data_effectiveDateTime_YYYY_MM_DD():
+    result = query_from_data("1000", "LOINC:2160-0", [{
+        "resourceType": "Observation",
+        "subject": {
+            "reference": "Patient/1000"
+        },
+        "code": {
+            "coding": [
+                {
+                    "system": "http://loinc.org",
+                    "code": "2160-0",
+                    "display": "Creatinine [Mass/volume] in Serum or Plasma"
+                }
+            ]
+        },
+        "effectiveDateTime": "2019-10-19",
+        "valueQuantity": {
+            "value": 95,
+            "unit": "mg/dL",
+            "system": "http://unitsofmeasure.org",
+            "code": "mg/dL"
+        }
+    }])
+    print(result.content)
+    assert result.status_code == 200
+                
+    assert result.json() == [{
+        "value": 95,
+        "unit": "mg/dL",
+        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveDateTime' = '2019-10-19'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
+        "timestamp": "2019-10-19",
+        "certitude": 2
+    }]
+
+    
 def test_ui():
     resp = requests.get("http://pdsphenotypemapping:8080/ui")
 
