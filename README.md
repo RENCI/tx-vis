@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/RENCI/pds-phenotype-mapping-plugin.svg?token=hSyYs1SXtzNJJDmjUzHi&branch=master)](https://travis-ci.com/RENCI/pds-phenotype-mapping-plugin)
+[![Build Status](https://travis-ci.com/RENCI/pds-mapper-example.svg?branch=master)](https://travis-ci.com/RENCI/pds-mapper-example)
 
 # pds-phenotype-mapping-plugin
 
