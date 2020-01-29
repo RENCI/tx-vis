@@ -2,6 +2,29 @@
 
 # pds-phenotype-mapping-plugin
 
+### What does this plug-in do?
+
+```
+Returns ALL patient variable values for a patient, assuming current time. Also returns how each variable was computed, what is the certainty of the computed value (certitude).
+This is a POST and accepts the output JSON from https://github.com/RENCI/pds-config to get the units, and the FHIR output JSON from https://github.com/RENCI/pdspi-fhir-example to get the patient resource.
+```
+
+### get system config
+
+```
+Get the system, as configured (including plugins, their selectors, the system default units, the values of the currently configured units, the complete list of supported clinical feature variables).
+
+See pds-config github repo for details- https://github.com/RENCI/pds-config
+```
+
+### get patient FHIR resource
+
+```
+Retrieve FHIR resource for a patient from the FHIR server frontend by the FHIR plugin.
+
+See pdspi-fhir-example github repo for an example of a FHIR plugin- https://github.com/RENCI/pdspi-fhir-example
+```
+
 ### build docker image
 
 ```
