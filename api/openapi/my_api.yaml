@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   description: 
     This is a pds mapper plugin.
-  version: "1.0.0"
+  version: "2.0.0"
   title: pdspi-mapper-example
   license:
     name: MIT
