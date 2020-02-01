@@ -10,7 +10,7 @@ info:
 paths:
   /mapping:
     post:
-      summary: Add patient record directory, patient_id, system and diagnosis code
+      summary: map from patient record to clinical feature variables
       operationId: api.mappingClinicalFromData
       parameters:
         - in: query
