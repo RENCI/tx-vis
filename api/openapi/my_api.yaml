@@ -1,26 +1,17 @@
 openapi: 3.0.0
 info:
   description: 
-    This is a pds-phenotype-mapping-plugin.  You can find
-    out more about Swagger at
-    [http://swagger.io](http://swagger.io) or on
-    [irc.freenode.net, #swagger](http://swagger.io/irc/).
+    This is a pds mapper plugin.
   version: "1.0.0"
-  title: pds-phenotype-mapping-plugin
+  title: pdspi-mapper-example
   license:
     name: MIT
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
-tags:
-  - name: patient
-    description: Patient information
-    externalDocs:
-      description: Find out more
-      url: 'http://swagger.io'
 paths:
   /mapping:
     post:
       summary: Add patient record directory, patient_id, system and diagnosis code
-      operationId: api.mappingClinical
+      operationId: api.mappingClinicalFromData
       parameters:
         - in: query
           name: patient_id
@@ -34,112 +25,95 @@ paths:
             type: string
             format: date-time
           required: true
-        - in: query
-          name: data_provider_plugin_id
-          example: "pds-data-provider-mock-fhir"
-          schema:
-            type: string
-          required: true
       requestBody:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/ClinicalFeatureVariables"
+              $ref: "#/components/schemas/PatientVariableTypesAndData"
       responses: # has to match output of dispatcher.py
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Mappings'
-        '400':
-          description: Invalid input
-        '500':
-          description: Internal server error
-  /mappingFromRecords:
-    post:
-      summary: Add patient record directory, patient_id, system and diagnosis code
-      operationId: api.mappingClinicalFromData
-      parameters:
-        - in: query
-          name: timestamp
-          schema:
-            type: string
-            format: date-time
-          required: true
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/ClinicalFeatureVariableAndDatas"
-      responses: # has to match output of dispatcher.py
-        '200':
-          description: Successful operation
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Mappings'
+                $ref: '#/components/schemas/PatientVariables'
         '400':
           description: Invalid input
         '500':
           description: Internal server error
 components:
   schemas:
-    ClinicalFeatureVariables:
+    PatientVariableTypes:
       type: array
       items:
-        $ref: "#/components/schemas/ClinicalFeatureVariable"
-    ClinicalFeatureVariable:
+        $ref: "#/components/schemas/PatientVariableType"
+    PatientVariableTypesAndData:
       type: object
       properties:
-        clinical_feature_variable:
-          type: string
-          example: "serum creatinine"
-        unit:
-          type: string
-          example: "mg/dL"
+        patientVariables:
+          $ref: "#/components/schemas/PatientVariableTypes"
+        data:
+          type: object
+          description: a FHIR bundle
       required:
-        - clinical_feature_variable
-      additionalProperties: false
-    ClinicalFeatureVariableAndDatas:
-      type: array
-      items:
-        $ref: "#/components/schemas/ClinicalFeatureVariableAndData"
-    ClinicalFeatureVariableAndData:
-      type: object
-      properties:
-        clinical_feature_variable:
-          type: string
-          example: "serum creatinine"
-        unit:
-          type: string
-          example: "mg/dL"
-        data: {}
-      required:
-        - clinical_feature_variable
+        - patientVariables
         - data
       additionalProperties: false
-
-    Mappings:
+    PatientVariables:
       type: array
       items:
-        $ref: "#/components/schemas/Mapping"
-    Mapping:
+        $ref: "#/components/schemas/PatientVariable"
+    PatientVariable:
       type: object
-      properties:
-        value: {}
-        calculation:
-          type: string
-        certitude:
-          type: integer
-          example: 1
-        timestamp:
-          type: string
-          format: date-time
-          example: "2019-12-03T13:41:09.942+00:00"
       required:
         - value
-        - calculation
+        - units
         - certitude
+        - how
+        - variableType
+      properties:
+        value:
+          type: string
+          description: the actual value of the patient variable. If 'pds-retrieve-datum' then retrieve from patient data warehouse, otherwise use the value as-is
+          example: "0.5"
+        units:
+          type: string
+          description: "The unit is standard throughout the pds system. It's up to the guidance plugin to make unit conversions as needed by the guidance model, just as it is up to the dashboard to make unit conversions as needed by the end user."
+          example: "years"
+        certitude:
+          type: int
+          description: The certitude of the value, 0 not certain, 1 somewhat certain, 2 certain
+          example: 2
+        how:
+          type: string
+          description: "If the variable is 'pds-retrieve-datum', then 'how' will read 'The value was specified by the end user.'"
+          example: "The value was specified by the end user."
+        variableType:
+          $ref: '#/components/schemas/PatientVariableType'
+      additionalProperties: false
+    PatientVariableType:
+      type: object
+      required:
+        - title
+        - clinicalFeatureVariable
+        - description
+        - why
+      properties:
+        title:
+          type: string
+          example: "Age"
+        clinicalFeatureVariable:
+          type: string
+          example: "LOINC:30525-0"
+        units:
+          type: string
+          description: "The unit is standard throughout the pds system. It's up to the guidance plugin to make unit conversions as needed by the guidance model, just as it is up to the dashboard to make unit conversions as needed by the end user."
+          example: "years"
+        description: 
+          type: string
+          example: "Age is a floating point number; e.g., a 6 month old child is 0.5 years."
+        why:
+          type: string
+          example: "Age is used to calculate the creatinine clearance. Dosing is lower for geriatric patient and contraindicated for pediatric patients"
       additionalProperties: false
         

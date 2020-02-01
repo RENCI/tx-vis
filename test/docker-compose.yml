@@ -7,7 +7,6 @@ services:
     command: ["-s", "-vv", "-x"] # , "-k", "test_api_age"]
     depends_on:
       - pdsphenotypemapping
-      - pdsphenotypemapping-test-pds-server
 
 
 

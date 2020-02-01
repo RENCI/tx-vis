@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import sys
 from oslash import Left, Right
 from .clinical_feature import mapping
 from tx.functional.utils import monad_utils, case, identity
@@ -15,35 +16,31 @@ def add_status_code(v):
     else:
         return v, 500
 
-# Function that returns patient's demographic and clinical feature data
-def lookupClinicals(patient_id, timestamp, data_provider_plugin_id, clinical_feature_variables_and_units):
-    mapper = sequence(map(lambda x: lookupClinical(patient_id, x["clinical_feature_variable"], x.get("unit"), timestamp, data_provider_plugin_id), clinical_feature_variables_and_units))
-    return case(mapper)(add_status_code)(identity)
 
-
-def lookupClinical(patient_id, clinical, unit, timestamp, data_provider_plugin_id):
-    data, feature, unit2 = mapping.get(clinical)
-    if unit is None:
-        unit = unit2
-    if feature is None:
-        return Left((f"cannot find mapping for {clinical}", 400))
-    else:
-        return data(patient_id, data_provider_plugin_id).bind(lambda records: feature(records, unit, timestamp))
+def add_variable(v):
+    def add_variable_to_value(val):
+        return {**val, "patientVariableType": v}
+    return add_variable_to_value
     
 
 # Function that returns patient's demographic and clinical feature data
-def lookupClinicalsFromData(timestamp, clinical_feature_variables_and_units):
-    mapper = sequence(map(lambda x: lookupClinicalFromRecord(x["data"], x["clinical_feature_variable"], x.get("unit"), timestamp), clinical_feature_variables_and_units))
+def lookupClinicalsFromData(patient_id, timestamp, clinical_feature_variables_and_data):
+    clinical_feature_variables = clinical_feature_variables_and_data["patientVariables"]
+    data = clinical_feature_variables_and_data["data"]
+    
+    mapper = sequence(map(lambda x: lookupClinicalFromRecord(patient_id, data, x, timestamp), clinical_feature_variables))
     return case(mapper)(add_status_code)(identity)
 
 
-def lookupClinicalFromRecord(data, clinical, unit, timestamp):
-    _, feature, unit2 = mapping.get(clinical)
+def lookupClinicalFromRecord(patient_id, data, v, timestamp):
+    clinical = v["clinicalFeatureVariable"]
+    unit = v.get("units")
+    filter_data, feature, unit2 = mapping.get(clinical)
     if unit is None:
         unit = unit2
     if feature is None:
         return Left((f"cannot find mapping for {clinical}", 400))
     else:
-        return feature(data, unit, timestamp)
+        return filter_data(patient_id, data).bind(lambda records: feature(records, unit, timestamp)).map(add_variable(v))
     
 

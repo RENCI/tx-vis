@@ -78,82 +78,357 @@ import requests
 #     assert arraylen==0
 
 
+bundles = {
+    "1000": {
+        "resourceType": "Bundle",
+        "entry": [{
+            "resource": {
+                "resourceType": "Patient",
+                "birthDate": "2009-01-01T00:00:00Z",
+                "gender": "male"
+            }
+        }, {
+            "resource": {
+                "resourceType": "Observation",
+                "subject": {
+                    "reference": "Patient/1000"
+                },
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "2160-0",
+                            "display": "Creatinine [Mass/volume] in Serum or Plasma"
+                        }
+                    ]
+                },
+                "effectiveInstant": "2019-10-19T00:00:00Z",
+                "valueQuantity": {
+                    "value": 95,
+                    "units": "mg/dL",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mg/dL"
+                }
+            }
+        }, {
+            "resource": {
+                "resourceType": "Observation",
+                "subject": {
+                    "reference": "Patient/1000"
+                },
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "2160-0",
+                            "display": "Creatinine [Mass/volume] in Serum or Plasma"
+                        }
+                    ]
+                },
+                "effectiveInstant": "2019-01-01T00:00:00Z",
+                "valueQuantity": {
+                    "value": 90,
+                    "units": "mg/dL",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mg/dL"
+                }
+            }
+        },{
+            "resource":{
+                "resourceType": "Observation",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "29463-7"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1000"
+                },
+                "effectiveInstant": "2019-10-19T00:00:00Z",
+                "valueQuantity": {
+                    "value": 99.9,
+                    "units": "kg",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "kg"
+                }
+            }
+        }, {
+            "resource": {
+                "resourceType": "Condition",
+                "subject": {
+                    "reference": "Patient/1000"
+                },
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                            "code": "I60.0011"
+                        }
+                    ]
+                },
+                "onsetDateTime": "2019-10-19T00:00:00Z"
+            }
+        }]
+    },
+    "1001": {
+        "resourceType": "Bundle",
+        "entry": [{
+            "resource": {
+                "resourceType": "Patient",
+            }
+        }, {
+            "resource": {
+                "resourceType": "Observation",
+                "subject": {
+                    "reference": "Patient/1001"
+                },
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "2160-0",
+                            "display": "Creatinine [Mass/volume] in Serum or Plasma"
+                        }
+                    ]
+                },
+                "valueQuantity": {
+                    "value": 95,
+                    "units": "mg/dL",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mg/dL"
+                }
+            }
+        },{
+            "resource":{
+                "resourceType": "Observation",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "29463-7"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1001"
+                },
+                "valueQuantity": {
+                    "value": 99.9,
+                    "units": "kg",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "kg"
+                }
+            }
+        }, {
+            "resource": {
+                "resourceType": "Condition",
+                "subject": {
+                    "reference": "Patient/1001"
+                },
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://hl7.org/fhir/sid/icd-10-cm",
+                            "code": "I60.0011",
+                        }
+                    ]
+                }
+            }
+        }]
+    },
+    "3000": {
+        "resourceType": "Bundle",
+        "entry": [{
+            "resource": {
+                "resourceType": "Observation",
+                "subject": {
+                    "reference": "Patient/3000"
+                },
+                "effectiveInstant": "2019-10-19T00:00:00Z",
+                "valueQuantity": {
+                    "value": 95,
+                    "units": "mg/dL",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mg/dL"
+                }
+            }
+        }]
+    },
+    "3001": {
+        "resourceType": "Bundle",
+        "entry": [{
+            "resource": {
+                "resourceType": "Observation",
+                "subject": {
+                    "reference": "Patient/3001"
+                },
+                "code": {
+                },
+                "effectiveInstant": "2019-10-19T00:00:00Z",
+                "valueQuantity": {
+                    "value": 95,
+                    "units": "mg/dL",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mg/dL"
+                }
+            }
+        }]
+    },
+    "5000": {
+        "resourceType": "Bundle",
+        "entry": [{
+            "resource": {
+                "resourceType": "Observation",
+                "subject": {
+                    "reference": "Patient/1000"
+                },
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "2160-0",
+                            "display": "Creatinine [Mass/volume] in Serum or Plasma"
+                        }
+                    ]
+                },
+                "effectiveInstant": "2019-10-19T00:00:00Z",
+                "valueQuantity": {
+                    "value": 95,
+                    "units": "mg/dL",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mg/dL"
+                }
+            }
+        }, {
+            "resource": {
+                "resourceType": "Observation",
+                "subject": {
+                    "reference": "Patient/1000"
+                },
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "2160-0",
+                            "display": "Creatinine [Mass/volume] in Serum or Plasma"
+                        }
+                    ]
+                },
+                "effectiveInstant": "2019-01-01T00:00:00Z",
+                "valueQuantity": {
+                    "value": 90,
+                    "units": "mg/dL",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mg/dL"
+                }
+            }
+        },{
+            "resource":{
+                "resourceType": "Observation",
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "29463-7"
+                        }
+                    ]
+                },
+                "subject": {
+                    "reference": "Patient/1000"
+                },
+                "effectiveInstant": "2019-10-19T00:00:00Z",
+                "valueQuantity": {
+                    "value": 99900,
+                    "units": "g",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "g"
+                }
+            }
+        }]
+    }
+}
+
 json_headers = {
     "Accept": "application/json"
 }
 
 
-def query(pid, cv, unit=None):
-    q = {
-        "clinical_feature_variable": cv
+def query(pid, cv, unit=None, data=None):
+    pv = {
+        "title": f"{cv} title",
+        "description": f"{cv} description",
+        "why": f"{cv} why",
+        "clinicalFeatureVariable": cv,
     }
     if unit is not None:
-        q["unit"] = unit
-    return requests.post(f"http://pdsphenotypemapping:8080/mapping?patient_id={pid}&timestamp=2019-10-19T00:00:00Z&data_provider_plugin_id=dpi", headers=json_headers, json=[q])
-
-
-def query_from_data(pid, cv, data, unit=None):
+        pv["units"] = unit
     q = {
-        "clinical_feature_variable": cv
+        "data": data if data is not None else bundles.get(pid, {"resourceType": "Bundle"}),
+        "patientVariables": [pv]
     }
-    if unit is not None:
-        q["unit"] = unit
-    q["data"] = data
-    return requests.post(f"http://pdsphenotypemapping:8080/mappingFromRecords?timestamp=2019-10-19T00:00:00Z", headers=json_headers, json=[q])
+    
+    return requests.post(f"http://pdsphenotypemapping:8080/mapping?patient_id={pid}&timestamp=2019-10-19T00:00:00Z", headers=json_headers, json=q), pv
 
 
 def test_api_age():
-    result = query("1000", "LOINC:30525-0")
+    result, pvt = query("1000", "LOINC:30525-0")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": 10,
-        "unit": "year",
-        "calculation": "Current date '2019-10-19' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '2009-01-01T00:00:00Z')",
-        "certitude": 2
+        "units": "year",
+        "how": "Current date '2019-10-19' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '2009-01-01T00:00:00Z')",
+        "certitude": 2,
+        "patientVariableType": pvt
     }]
 
     
 def test_api_age_no_field():
-    result = query("1001", "LOINC:30525-0")
+    result, pvt = query("1001", "LOINC:30525-0")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": None,
-        "calculation": "birthDate not set",
-        "certitude": 0
+        "how": "birthDate not set",
+        "certitude": 0,
+        "patientVariableType": pvt
     }]
 
     
 def test_api_age_no_record():
-    result = query("2000", "LOINC:30525-0")
+    result, pvt = query("2000", "LOINC:30525-0")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": None,
-        "calculation": "record not found",
-        "certitude": 0
+        "how": "record not found",
+        "certitude": 0,
+        "patientVariableType": pvt
     }]
 
     
 def test_api_age_unit_year():
-    result = query("1000", "LOINC:30525-0", "year")
+    result, pvt = query("1000", "LOINC:30525-0", "year")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": 10,
-        "unit": "year",
-        "calculation": "Current date '2019-10-19' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '2009-01-01T00:00:00Z')",
-        "certitude": 2
+        "units": "year",
+        "how": "Current date '2019-10-19' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '2009-01-01T00:00:00Z')",
+        "certitude": 2,
+        "patientVariableType": pvt
     }]
 
     
 def test_api_age_unit_wrong():
-    result = query("1000", "LOINC:30525-0", "wrong")
+    result, pvt = query("1000", "LOINC:30525-0", "wrong")
     print(result.content)
     assert result.status_code == 400
                 
@@ -161,83 +436,89 @@ def test_api_age_unit_wrong():
 
     
 def test_api_sex():
-    result = query("1000", "LOINC:21840-4")
+    result, pvt = query("1000", "LOINC:21840-4")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": "male",
-        "calculation": "FHIR resource 'Patient' field>'gender' = male",
-        "certitude": 2
+        "how": "FHIR resource 'Patient' field>'gender' = male",
+        "certitude": 2,
+        "patientVariableType": pvt
     }]
 
     
 def test_api_sex_no_field():
-    result = query("1001", "LOINC:21840-4")
+    result, pvt = query("1001", "LOINC:21840-4")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": None,
-        "calculation": "gender not set",
-        "certitude": 0
+        "how": "gender not set",
+        "certitude": 0,
+        "patientVariableType": pvt
     }]
 
     
 def test_api_sex_no_record():
-    result = query("2000", "LOINC:21840-4")
+    result, pvt = query("2000", "LOINC:21840-4")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": None,
-        "calculation": "record not found",
-        "certitude": 0
+        "how": "record not found",
+        "certitude": 0,
+        "patientVariableType": pvt
     }]
 
     
 def test_api_serum_creatinine():
-    result = query("1000", "LOINC:2160-0")
+    result, pvt = query("1000", "LOINC:2160-0")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": 95,
-        "unit": "mg/dL",
-        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
+        "units": "mg/dL",
+        "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
         "timestamp": "2019-10-19T00:00:00Z",
-        "certitude": 2
+        "certitude": 2,
+        "patientVariableType": pvt
     }]
       
 
 def test_api_serum_creatinine_no_timestamp():
-    result = query("1001", "LOINC:2160-0")
+    result, pvt = query("1001", "LOINC:2160-0")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": 95,
-        "unit": "mg/dL",
-        "calculation": "current as of 2019-10-19T00:00:00Z. (record has no timestamp) 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
+        "units": "mg/dL",
+        "how": "current as of 2019-10-19T00:00:00Z. (record has no timestamp) 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
         "timestamp": None,
-        "certitude": 1
+        "certitude": 1,
+        "patientVariableType": pvt
     }]
 
 
 def test_api_serum_creatinine_no_record():
-    result = query("2000", "LOINC:2160-0")
+    result, pvt = query("2000", "LOINC:2160-0")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": None,
-        "calculation": "no record found code http://loinc.org 2160-0",
-        "certitude": 0
+        "how": "no record found code http://loinc.org 2160-0",
+        "certitude": 0,
+        "patientVariableType": pvt
     }]
 
     
 def test_api_no_code():
-    result = query("3000", "LOINC:2160-0")
+    result, pvt = query("3000", "LOINC:2160-0")
     print(result.content)
     assert result.status_code == 500
                 
@@ -251,7 +532,7 @@ def test_api_no_code():
             "effectiveInstant": "2019-10-19T00:00:00Z",
             "valueQuantity": {
                 "value": 95,
-                "unit": "mg/dL",
+                "units": "mg/dL",
                 "system": "http://unitsofmeasure.org",
                 "code": "mg/dL"
             }
@@ -260,7 +541,7 @@ def test_api_no_code():
 
     
 def test_api_no_coding_under_code():
-    result = query("3001", "LOINC:2160-0")
+    result, pvt = query("3001", "LOINC:2160-0")
     print(result.content)
     assert result.status_code == 500
                 
@@ -275,7 +556,7 @@ def test_api_no_coding_under_code():
             "effectiveInstant": "2019-10-19T00:00:00Z",
             "valueQuantity": {
                 "value": 95,
-                "unit": "mg/dL",
+                "units": "mg/dL",
                 "system": "http://unitsofmeasure.org",
                 "code": "mg/dL"
             }
@@ -284,121 +565,95 @@ def test_api_no_coding_under_code():
 
     
 def test_api_weight():
-    result = query("1000", "LOINC:29463-7")
+    result, pvt = query("1000", "LOINC:29463-7")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": 99.9,
-        "unit": "kg",
-        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg'.",
+        "units": "kg",
+        "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg'.",
         "timestamp": "2019-10-19T00:00:00Z",
-        "certitude": 2
+        "certitude": 2,
+        "patientVariableType": pvt
     }]
       
 
 def test_api_weight_no_timestamp():
-    result = query("1001", "LOINC:29463-7")
+    result, pvt = query("1001", "LOINC:29463-7")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": 99.9,
-        "unit": "kg",
-        "calculation": "current as of 2019-10-19T00:00:00Z. (record has no timestamp) 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg'.",
+        "units": "kg",
+        "how": "current as of 2019-10-19T00:00:00Z. (record has no timestamp) 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg'.",
         "timestamp": None,
-        "certitude": 1
+        "certitude": 1,
+        "patientVariableType": pvt
     }]
 
 
 def test_api_weight_no_record():
-    result = query("2000", "LOINC:29463-7")
+    result, pvt = query("2000", "LOINC:29463-7")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": None,
-        "calculation": "no record found code http://loinc.org 29463-7",
-        "certitude": 0
+        "how": "no record found code http://loinc.org 29463-7",
+        "certitude": 0,
+        "patientVariableType": pvt
     }]
 
     
 def test_api_weight_unit_kg():
-    result = query("1000", "LOINC:29463-7", "kg")
+    result, pvt = query("1000", "LOINC:29463-7", "kg")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": 99.9,
-        "unit": "kg",
-        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg'.",
+        "units": "kg",
+        "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg'.",
         "timestamp": "2019-10-19T00:00:00Z",
-        "certitude": 2
+        "certitude": 2,
+        "patientVariableType": pvt
     }]
 
     
 def test_api_weight_unit_g():
-    result = query("1000", "LOINC:29463-7", "g")
+    result, pvt = query("1000", "LOINC:29463-7", "g")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": 99900,
-        "unit": "g",
-        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg' converted to g.",
+        "units": "g",
+        "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg' converted to g.",
         "timestamp": "2019-10-19T00:00:00Z",
-        "certitude": 2
-    }]
-
-    
-def test_api_weight_code_from_data():
-    result = query_from_data("1000", "LOINC:29463-7", [{
-        "resourceType": "Observation",
-        "code": {
-            "coding": [
-                {
-                    "system": "http://loinc.org",
-                    "code": "29463-7"
-                }
-            ]
-        },
-        "subject": {
-            "reference": "Patient/1000"
-        },
-        "effectiveInstant": "2019-10-19T00:00:00Z",
-        "valueQuantity": {
-            "value": 99.9,
-            "code": "kg"
-        }
-    }])
-    print(result.content)
-    assert result.status_code == 200
-                
-    assert result.json() == [{
-        "value": 99.9,
-        "unit": "kg",
-        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'code'>'kg'.",
-        "timestamp": "2019-10-19T00:00:00Z",
-        "certitude": 2
+        "certitude": 2,
+        "patientVariableType": pvt
     }]
 
     
 def test_api_weight_unit_system_default():
-    result = query("5000", "LOINC:29463-7")
+    result, pvt = query("5000", "LOINC:29463-7")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": 99.9,
-        "unit": "kg",
-        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99900', 'unit'>'g' converted to kg.",
+        "units": "kg",
+        "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99900', 'unit'>'g' converted to kg.",
         "timestamp": "2019-10-19T00:00:00Z",
-        "certitude": 2
+        "certitude": 2,
+        "patientVariableType": pvt
     }]
 
     
 def test_api_weight_unit_wrong():
-    result = query("1000", "LOINC:29463-7", "wrong")
+    result, pvt = query("1000", "LOINC:29463-7", "wrong")
     print(result.content)
     assert result.status_code == 500
                 
@@ -406,39 +661,41 @@ def test_api_weight_unit_wrong():
 
     
 def test_api_bleeding():
-    result = query("1000", "HP:0001892")
+    result, pvt = query("1000", "HP:0001892")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": True,
-        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Condition', field>'onsetDateTime' = '2019-10-19T00:00:00Z'); 'bleeding' computed from FHIR resource 'Condition' code http://hl7.org/fhir/sid/icd-10-cm I60.0011.",
+        "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Condition', field>'onsetDateTime' = '2019-10-19T00:00:00Z'); 'bleeding' computed from FHIR resource 'Condition' code http://hl7.org/fhir/sid/icd-10-cm I60.0011.",
         "timestamp": "2019-10-19T00:00:00Z",
-        "certitude": 2
+        "certitude": 2,
+        "patientVariableType": pvt
     }]
       
 
 def test_api_bleeding_no_timestamp():
-    result = query("1001", "HP:0001892")
+    result, pvt = query("1001", "HP:0001892")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": True,
-        "calculation": "current as of 2019-10-19T00:00:00Z. (record has no timestamp) 'bleeding' computed from FHIR resource 'Condition' code http://hl7.org/fhir/sid/icd-10-cm I60.0011.",
+        "how": "current as of 2019-10-19T00:00:00Z. (record has no timestamp) 'bleeding' computed from FHIR resource 'Condition' code http://hl7.org/fhir/sid/icd-10-cm I60.0011.",
         "timestamp": None,
-        "certitude": 1
+        "certitude": 1,
+        "patientVariableType": pvt
     }]
 
 
 def test_api_bleeding_no_record():
-    result = query("2000", "HP:0001892")
+    result, pvt = query("2000", "HP:0001892")
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": None,
-        "calculation": "no record found code " + ",".join(map(lambda a: a["system"] + " " + a["code"], [
+        "how": "no record found code " + ",".join(map(lambda a: a["system"] + " " + a["code"], [
             {
                 "system":"http://hl7.org/fhir/sid/icd-10-cm",
                 "code":"I60\\..*",
@@ -690,137 +947,90 @@ def test_api_bleeding_no_record():
                 "is_regex":True,
             }
         ])),
-        "certitude": 0
+        "certitude": 0,
+        "patientVariableType": pvt
     }]
 
 
-def test_api_age_from_data():
-    result = query_from_data("1000", "LOINC:30525-0", {"birthDate":"2009-01-01"})
-    print(result.content)
-    assert result.status_code == 200
-                
-    assert result.json() == [{
-        "value": 10,
-        "unit": "year",
-        "calculation": "Current date '2019-10-19' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '2009-01-01')",
-        "certitude": 2
-    }]
-
-    
-def test_api_sex_from_data():
-    result = query_from_data("1000", "LOINC:21840-4", {"gender": "male"})
-    print(result.content)
-    assert result.status_code == 200
-                
-    assert result.json() == [{
-        "value": "male",
-        "calculation": "FHIR resource 'Patient' field>'gender' = male",
-        "certitude": 2
-    }]
-
-    
-def test_api_serum_creatinine_from_data():
-    result = query_from_data("1000", "LOINC:2160-0", [{
-        "resourceType": "Observation",
-        "subject": {
-            "reference": "Patient/1000"
-        },
-        "code": {
-            "coding": [
-                {
-                    "system": "http://loinc.org",
-                    "code": "2160-0",
-                    "display": "Creatinine [Mass/volume] in Serum or Plasma"
-                }
-            ]
-        },
-        "effectiveInstant": "2019-10-19T00:00:00Z",
-        "valueQuantity": {
-            "value": 95,
-            "unit": "mg/dL",
-            "system": "http://unitsofmeasure.org",
-            "code": "mg/dL"
-        }
-    }])
-    print(result.content)
-    assert result.status_code == 200
-                
-    assert result.json() == [{
-        "value": 95,
-        "unit": "mg/dL",
-        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
-        "timestamp": "2019-10-19T00:00:00Z",
-        "certitude": 2
-    }]
-
-    
 def test_api_serum_creatinine_from_data_effectiveDateTime():
-    result = query_from_data("1000", "LOINC:2160-0", [{
-        "resourceType": "Observation",
-        "subject": {
-            "reference": "Patient/1000"
-        },
-        "code": {
-            "coding": [
-                {
-                    "system": "http://loinc.org",
-                    "code": "2160-0",
-                    "display": "Creatinine [Mass/volume] in Serum or Plasma"
+    result, pvt = query("1000", "LOINC:2160-0", data={
+        "resourceType": "Bundle",
+        "entry": [{
+            "resource": {
+                "resourceType": "Observation",
+                "subject": {
+                    "reference": "Patient/1000"
+                },
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "2160-0",
+                            "display": "Creatinine [Mass/volume] in Serum or Plasma"
+                        }
+                    ]
+                },
+                "effectiveDateTime": "2019-10-19T00:00:00Z",
+                "valueQuantity": {
+                    "value": 95,
+                    "units": "mg/dL",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mg/dL"
                 }
-            ]
-        },
-        "effectiveDateTime": "2019-10-19T00:00:00Z",
-        "valueQuantity": {
-            "value": 95,
-            "unit": "mg/dL",
-            "system": "http://unitsofmeasure.org",
-            "code": "mg/dL"
-        }
-    }])
+            }
+        }]
+    })
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": 95,
-        "unit": "mg/dL",
-        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveDateTime' = '2019-10-19T00:00:00Z'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
+        "units": "mg/dL",
+        "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveDateTime' = '2019-10-19T00:00:00Z'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
         "timestamp": "2019-10-19T00:00:00Z",
-        "certitude": 2
+        "certitude": 2,
+        "patientVariableType": pvt
     }]
 
     
 def test_api_serum_creatinine_from_data_effectiveDateTime_YYYY_MM_DD():
-    result = query_from_data("1000", "LOINC:2160-0", [{
-        "resourceType": "Observation",
-        "subject": {
-            "reference": "Patient/1000"
-        },
-        "code": {
-            "coding": [
-                {
-                    "system": "http://loinc.org",
-                    "code": "2160-0",
-                    "display": "Creatinine [Mass/volume] in Serum or Plasma"
+    result, pvt = query("1000", "LOINC:2160-0", data={
+        "resourceType": "Bundle",
+        "entry": [{
+            "resource": {
+                "resourceType": "Observation",
+                "subject": {
+                    "reference": "Patient/1000"
+                },
+                "code": {
+                    "coding": [
+                        {
+                            "system": "http://loinc.org",
+                            "code": "2160-0",
+                            "display": "Creatinine [Mass/volume] in Serum or Plasma"
+                        }
+                    ]
+                },
+                "effectiveDateTime": "2019-10-19",
+                "valueQuantity": {
+                    "value": 95,
+                    "units": "mg/dL",
+                    "system": "http://unitsofmeasure.org",
+                    "code": "mg/dL"
                 }
-            ]
-        },
-        "effectiveDateTime": "2019-10-19",
-        "valueQuantity": {
-            "value": 95,
-            "unit": "mg/dL",
-            "system": "http://unitsofmeasure.org",
-            "code": "mg/dL"
-        }
-    }])
+            }
+        }]
+    })
     print(result.content)
     assert result.status_code == 200
                 
     assert result.json() == [{
         "value": 95,
-        "unit": "mg/dL",
-        "calculation": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveDateTime' = '2019-10-19'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
+        "units": "mg/dL",
+        "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveDateTime' = '2019-10-19'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
         "timestamp": "2019-10-19",
-        "certitude": 2
+        "certitude": 2,
+        "patientVariableType": pvt
     }]
 
     

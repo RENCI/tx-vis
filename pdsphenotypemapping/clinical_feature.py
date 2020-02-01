@@ -54,7 +54,7 @@ def calculation_template(clinical_variable, resource_name, timestamp_today, reco
         from_value = ""
     else:
         value = vq["value"]
-        from_unit = vq.get("unit")
+        from_unit = vq.get("units")
         if from_unit is None:
             from_unit = vq.get("code")
             from_unit_from = "code"
@@ -72,13 +72,12 @@ def calculation_template(clinical_variable, resource_name, timestamp_today, reco
         from_value = f", field>'valueQuantity'field>'value' = '{value}'{unit}"
     return f"current as of {timestamp_today}.{timestamp} '{clinical_variable}' computed from FHIR resource '{resource_name}' code {from_code}{from_value}."
 
-
 def query_records(records, codes, unit, timestamp, clinical_variable, resource_name):
     if records == None:
         return Right({
             "value": None,
             "certitude": 0,
-            "calculation": "no record found"
+            "how": "no record found"
         })
 
     records_filtered = []
@@ -109,7 +108,7 @@ def query_records(records, codes, unit, timestamp, clinical_variable, resource_n
         return Right({
             "value": None,
             "certitude": 0,
-            "calculation": f"no record found code {from_code}"
+            "how": f"no record found code {from_code}"
         })
     else:
         ts = strtots(timestamp)
@@ -130,7 +129,7 @@ def query_records(records, codes, unit, timestamp, clinical_variable, resource_n
         vq = record.get("valueQuantity")
         if vq is not None:
             v = vq["value"]
-            from_u = vq.get("unit")
+            from_u = vq.get("units")
             if from_u is None:
                 from_u = vq.get("code")
             mv = convert(v, from_u, unit)
@@ -144,29 +143,41 @@ def query_records(records, codes, unit, timestamp, clinical_variable, resource_n
         c = calculation_template(clinical_variable, resource_name, timestamp, record, unit)
         return Right({
             "value": v,
-            **({"unit": unit} if unit is not None else {"unit": from_u} if from_u is not None else {}),
+            **({"units": unit} if unit is not None else {"units": from_u} if from_u is not None else {}),
             "certitude": cert,
             "timestamp": ts,
-            "calculation": c
+            "how": c
         })
     
 
-def get_observation(patient_id, plugin):
-    resp = get(pdsdpi_url_base(plugin) + f"/Observation?patient={patient_id}")
-    return resp.bind(unbundle)
+def get_observation(patient_id, fhir):
+    records = unbundle(fhir)
+    return records.map(lambda xs : list(filter (lambda x : x["resourceType"] == "Observation", xs)))
 
 
-def get_condition(patient_id, plugin):
-    resp = get(pdsdpi_url_base(plugin) + f"/Condition?patient={patient_id}")
-    return resp.bind(unbundle)
+def get_condition(patient_id, fhir):
+    records = unbundle(fhir)
+    return records.map(lambda xs : list(filter (lambda x : x["resourceType"] == "Condition", xs)))
 
 
-def get_patient(patient_id, plugin):
-    resp = get(pdsdpi_url_base(plugin) + f"/Patient/{patient_id}")
-    if isinstance(resp, Left) and isinstance(resp.value[0], dict) and resp.value[0].get("status_code") == 404:
+def one(xs):
+    if len(xs) == 1:
+        return Right(xs[0])
+    elif len(xs) == 0:
         return Right(None)
     else:
-        return resp
+        return Left({
+            "value": None,
+            "how": "more than one record found",
+            "certitude": 0
+        })
+        
+
+    
+def get_patient(patient_id, fhir):
+    records = unbundle(fhir)
+    return records.bind(lambda xs : one(list(filter (lambda x : x["resourceType"] == "Patient", xs))))
+
 
 def height(records, unit, timestamp):
     return query_records(records, [
@@ -216,7 +227,7 @@ def age(patient, unit, timestamp):
         return Right({
             "value": None,
             "certitude": 0,
-            "calculation": "record not found"            
+            "how": "record not found"            
         })
     else:
         if "birthDate" in patient:
@@ -226,15 +237,15 @@ def age(patient, unit, timestamp):
             mage = calculate_age2(date_of_birth, timestamp)
             return mage.map(lambda age: {
                 "value": age,
-                "unit": "year",
+                "units": "year",
                 "certitude": 2,
-                "calculation": f"Current date '{today}' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '{birth_date}')"
+                "how": f"Current date '{today}' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '{birth_date}')"
             })
         else:
             return Right({
                 "value": None,
                 "certitude": 0,
-                "calculation": "birthDate not set"
+                "how": "birthDate not set"
             })
 
 
@@ -243,7 +254,7 @@ def sex(patient, unit, timestamp):
         return Right({
             "value": None,
             "certitude": 0,
-            "calculation": "record not found"            
+            "how": "record not found"            
         })
     else:
         gender = patient.get("gender")
@@ -251,13 +262,13 @@ def sex(patient, unit, timestamp):
             return Right({
                 "value": None,
                 "certitude": 0,
-                "calculation": "gender not set"
+                "how": "gender not set"
             })
         else:
             return Right({
                 "value": gender,
                 "certitude": 2,
-                "calculation": f"FHIR resource 'Patient' field>'gender' = {gender}"
+                "how": f"FHIR resource 'Patient' field>'gender' = {gender}"
             })
 
 
@@ -269,7 +280,7 @@ def demographic_extension(url):
                 return {
                     "value": None,
                     "certitude": 0,
-                    "calculation": "record not found"            
+                    "how": "record not found"            
                 }
             else:
                 extension = patient.get("extension")
@@ -277,7 +288,7 @@ def demographic_extension(url):
                     return {
                         "value": None,
                         "certitude": 0,
-                        "calculation": "extension not found"
+                        "how": "extension not found"
                     }
                 else:
                 
@@ -286,7 +297,7 @@ def demographic_extension(url):
                         return {
                             "value": None,
                             "certitude": 0,
-                            "calculation": f"extension not found url {url}"
+                            "how": f"extension not found url {url}"
                         }
                     else:
                         certitude = 2
@@ -311,7 +322,7 @@ def demographic_extension(url):
                         return {
                             "value": value,
                             "certitude": certitude,
-                            "calculation": calculation
+                            "how": calculation
                         }
         return mpatient.map(calculate_demographic)
     return func
