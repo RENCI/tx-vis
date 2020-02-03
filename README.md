@@ -33,7 +33,7 @@ docker-compose -f docker-compose.yml -f test/docker-compose.yml -f test/pds-serv
 Steps to add new mapper:
 1. Read the steps at the top of https://github.com/RENCI/pdspi-mapper-example/blob/master/pdsphenotypemapping/newfeature_addition.py
 2. Follow the steps in the file above that shows addition of a new feature called 'oxygen_content' in order to understand the steps. These steps are-
-  2.1. Add the key-value pair for the new feature to 'mapping' dictionary
+	2.1. Add the key-value pair for the new feature to 'mapping' dictionary
   ```
   mapping = {
     "LOINC:2160-0": (get_observation, serum_creatinine, "mg/dL"), # serum creatinine
@@ -49,7 +49,7 @@ Steps to add new mapper:
     "LOINC:39156-5": (get_observation, bmi, "kg/m^2"),
 	  "LOINC:59274-1": (get_observation, oxygen_content, "mL/dL") # newly added feature- Oxygen content in Arterial blood by calculation
   ```
-  2.2. Write a python function for the new feature
+   2.2. Write a python function for the new feature
   ```
   def oxygen_content(records, unit, timestamp): 
     return query_records(records, [
