@@ -47,7 +47,8 @@ Steps to add new mapper:
     "LOINC:8302-2": (get_observation, height, "m"),
     "LOINC:29463-7": (get_observation, weight, "kg"),
     "LOINC:39156-5": (get_observation, bmi, "kg/m^2"),
-	  "LOINC:59274-1": (get_observation, oxygen_content, "mL/dL") # newly added feature- Oxygen content in Arterial blood by calculation
+    "LOINC:59274-1": (get_observation, oxygen_content, "mL/dL") # newly added feature- Oxygen content in Arterial blood by calculation
+  }
   ```
    2.2. Write a python function for the new feature
   ```
