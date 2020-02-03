@@ -32,7 +32,34 @@ docker-compose -f docker-compose.yml -f test/docker-compose.yml -f test/pds-serv
 
 Steps to add new mapper:
 1. Read the steps at the top of https://github.com/RENCI/pdspi-mapper-example/blob/master/pdsphenotypemapping/newfeature_addition.py
-2. Follow the steps in the file above that shows addition of a new feature called 'oxygen_content' in order to understand the steps
+2. Follow the steps in the file above that shows addition of a new feature called 'oxygen_content' in order to understand the steps. These steps are-
+  2.1. Add the key-value pair for the new feature to 'mapping' dictionary
+  ```
+  mapping = {
+    "LOINC:2160-0": (get_observation, serum_creatinine, "mg/dL"), # serum creatinine
+    "LOINC:82810-3": (get_condition, pregnancy, None), # pregnancy
+    "HP:0001892": (get_condition, bleeding, None), # bleeding
+    "HP:0000077": (get_condition, kidney_dysfunction, None), # kidney dysfunction
+    "LOINC:30525-0": (get_patient, age, "year"),
+    "LOINC:54134-2": (get_patient, race, None),
+    "LOINC:54120-1": (get_patient, ethnicity, None),
+    "LOINC:21840-4": (get_patient, sex, None),
+    "LOINC:8302-2": (get_observation, height, "m"),
+    "LOINC:29463-7": (get_observation, weight, "kg"),
+    "LOINC:39156-5": (get_observation, bmi, "kg/m^2"),
+	  "LOINC:59274-1": (get_observation, oxygen_content, "mL/dL") # newly added feature- Oxygen content in Arterial blood by calculation
+  ```
+  2.2. Write a python function for the new feature
+  ```
+  def oxygen_content(records, unit, timestamp): 
+    return query_records(records, [
+	{
+	    "system":"http://loinc.org",
+	    "code":"59274-1",
+	    "is_regex": False
+	}
+    ], unit, timestamp, "oxygen content", "Observation")
+  ```
 3. Now, follow the same steps as above to add your own feature
 4. Please remember to create a pull request including documentation for why you want the new feature(s) to be added (likely, because they are needed for a particular guidance plugin, so be sure to name the guidance plugin)
 
