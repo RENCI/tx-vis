@@ -29,6 +29,13 @@ docker-compose -f docker-compose.yml -f test/docker-compose.yml -f test/pds-serv
 ```
 
 ### how to add new mapper
+
+Steps to add new mapper:
+1. Read the steps at the top of https://github.com/RENCI/pdspi-mapper-example/blob/master/pdsphenotypemapping/newfeature_addition.py
+2. Follow the steps in the file above that shows addition of a new feature called 'oxygen_content' in order to understand the steps
+3. Now, follow the same steps as above to add your own feature
+4. Please remember to create a pull request including documentation for why you want the new feature(s) to be added (likely, because they are needed for a particular guidance plugin, so be sure to name the guidance plugin)
+
 In the following, `any` is any json serializable type.
 
 `pdsphenotypemapping/clinical_feature.py`
