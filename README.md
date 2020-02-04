@@ -4,8 +4,7 @@
 
 ### What does this plug-in do?
 
-Returns ALL patient variable values for a patient, assuming current time. Also returns how each variable was computed, what is the certainty of the computed value (certitude).
-This is a POST and accepts the output JSON from https://github.com/RENCI/pds-config to get the units, and the FHIR output JSON from https://github.com/RENCI/pdspi-fhir-example to get the patient resource.
+Returns ALL patient variable values for a patient. Also returns how each variable was computed, what is the certainty of the computed value (certitude).
 
 ### build docker image
 
