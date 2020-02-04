@@ -1,6 +1,6 @@
 [![Build Status](https://travis-ci.com/RENCI/pdspi-mapper-example.svg?branch=master)](https://travis-ci.com/RENCI/pdspi-mapper-example)
 
-# pds-phenotype-mapping-plugin
+# pdspi-mapper-example
 
 ### What does this plug-in do?
 
