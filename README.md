@@ -27,12 +27,12 @@ example `docker-compose.yml`
 docker-compose -f docker-compose.yml -f test/docker-compose.yml -f test/pds-server/docker-compose.yml up --build -V --exit-code-from pdsphenotypemapping-test
 ```
 
-### how to add new mapper
+### how to add a new mapping to this mapper
 
-Steps to add new mapper:
+Steps to add new mapping:
 1. Read the steps at the top of https://github.com/RENCI/pdspi-mapper-example/blob/master/pdsphenotypemapping/newfeature_addition.py
-2. Follow the steps in the file above that shows addition of a new feature called 'oxygen_content' in order to understand the steps. These steps are-
-	2.1. Add the key-value pair for the new feature to 'mapping' dictionary
+2. Follow the steps in the file above that shows addition of a new mapping for a clinical variable called 'oxygen_content'. These steps are-
+	2.1. Add the key-value pair for the new clinical variable to then 'mapping' dictionary
   ```
   mapping = {
     "LOINC:2160-0": (get_observation, serum_creatinine, "mg/dL"), # serum creatinine
@@ -49,7 +49,7 @@ Steps to add new mapper:
     "LOINC:59274-1": (get_observation, oxygen_content, "mL/dL") # newly added feature- Oxygen content in Arterial blood by calculation
   }
   ```
-   2.2. Write a python function for the new feature
+   2.2. Write a python function for the new clinical variable
   ```
   def oxygen_content(records, unit, timestamp): 
     return query_records(records, [
@@ -60,8 +60,8 @@ Steps to add new mapper:
 	}
     ], unit, timestamp, "oxygen content", "Observation")
   ```
-3. Now, follow the same steps as above to add your own feature
-4. Please remember to create a pull request including documentation for why you want the new feature(s) to be added (likely, because they are needed for a particular guidance plugin, so be sure to name the guidance plugin)
+3. Now, follow the same steps as above to add your own clinical variable
+4. Please remember to create a pull request including documentation for why you want the new clinical variable(s) to be added (likely, because they are needed for a particular guidance plugin, so be sure to name the guidance plugin)
 
 In the following, `any` is any json serializable type.
 
