@@ -100,7 +100,7 @@ components:
           format: date-time
           example: "2019-12-03T13:41:09.942+00:00"
         certitude:
-          type: int
+          type: integer
           description: The certitude of the value, 0 not certain, 1 somewhat certain, 2 certain
           example: 2
       additionalProperties: false
