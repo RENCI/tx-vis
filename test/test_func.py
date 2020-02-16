@@ -359,9 +359,11 @@ json_headers = {
 def query(pid, cv, unit=None, data=None):
     pv = {
         "title": f"{cv} title",
-        "description": f"{cv} description",
+        "legalValues": {
+            "type": "integer"
+        },
         "why": f"{cv} why",
-        "clinicalFeatureVariable": cv,
+        "id": cv,
     }
     if unit is not None:
         pv["units"] = unit
@@ -379,11 +381,13 @@ def test_api_age():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": 10,
-        "units": "year",
+        "variableValue": {
+            "value": 10,
+            "units": "year"
+        },
         "how": "Current date '2019-10-19' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '2009-01-01T00:00:00Z')",
         "certitude": 2,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
     
@@ -393,10 +397,12 @@ def test_api_age_no_field():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": None,
+        "variableValue": {
+            "value": None
+        },
         "how": "birthDate not set",
         "certitude": 0,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
     
@@ -406,10 +412,12 @@ def test_api_age_no_record():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": None,
+        "variableValue": {
+            "value": None
+        },
         "how": "record not found",
         "certitude": 0,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
     
@@ -419,11 +427,13 @@ def test_api_age_unit_year():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": 10,
-        "units": "year",
+        "variableValue": {
+            "value": 10,
+            "units": "year"
+        },
         "how": "Current date '2019-10-19' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '2009-01-01T00:00:00Z')",
         "certitude": 2,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
     
@@ -441,10 +451,12 @@ def test_api_sex():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": "male",
+        "variableValue": {
+            "value": "male"
+        },
         "how": "FHIR resource 'Patient' field>'gender' = male",
         "certitude": 2,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
     
@@ -454,10 +466,12 @@ def test_api_sex_no_field():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": None,
+        "variableValue": {
+            "value": None
+        },
         "how": "gender not set",
         "certitude": 0,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
     
@@ -467,10 +481,12 @@ def test_api_sex_no_record():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": None,
+        "variableValue": {
+            "value": None
+        },
         "how": "record not found",
         "certitude": 0,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
     
@@ -480,12 +496,14 @@ def test_api_serum_creatinine():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": 95,
-        "units": "mg/dL",
+        "variableValue": {
+            "value": 95,
+            "units": "mg/dL"
+        },
         "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
       
 
@@ -495,12 +513,14 @@ def test_api_serum_creatinine_no_timestamp():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": 95,
-        "units": "mg/dL",
+        "variableValue": {
+            "value": 95,
+            "units": "mg/dL"
+        },
         "how": "current as of 2019-10-19T00:00:00Z. (record has no timestamp) 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
         "timestamp": None,
         "certitude": 1,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
 
@@ -510,10 +530,12 @@ def test_api_serum_creatinine_no_record():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": None,
+        "variableValue": {
+            "value": None
+        },
         "how": "no record found code http://loinc.org 2160-0",
         "certitude": 0,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
     
@@ -570,12 +592,14 @@ def test_api_weight():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": 99.9,
-        "units": "kg",
+        "variableValue": {
+            "value": 99.9,
+            "units": "kg"
+        },
         "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg'.",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
       
 
@@ -585,12 +609,14 @@ def test_api_weight_no_timestamp():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": 99.9,
-        "units": "kg",
+        "variableValue": {
+            "value": 99.9,
+            "units": "kg"
+        },
         "how": "current as of 2019-10-19T00:00:00Z. (record has no timestamp) 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg'.",
         "timestamp": None,
         "certitude": 1,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
 
@@ -600,10 +626,12 @@ def test_api_weight_no_record():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": None,
+        "variableValue": {
+            "value": None
+        },
         "how": "no record found code http://loinc.org 29463-7",
         "certitude": 0,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
     
@@ -613,12 +641,14 @@ def test_api_weight_unit_kg():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": 99.9,
-        "units": "kg",
+        "variableValue": {
+            "value": 99.9,
+            "units": "kg"
+        },
         "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg'.",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
     
@@ -628,12 +658,14 @@ def test_api_weight_unit_g():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": 99900,
-        "units": "g",
+        "variableValue": {
+            "value": 99900,
+            "units": "g"
+        },
         "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99.9', 'unit'>'kg' converted to g.",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
     
@@ -643,12 +675,14 @@ def test_api_weight_unit_system_default():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": 99.9,
-        "units": "kg",
+        "variableValue": {
+            "value": 99.9,
+            "units": "kg"
+        },
         "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveInstant' = '2019-10-19T00:00:00Z'); 'weight' computed from FHIR resource 'Observation' code http://loinc.org 29463-7, field>'valueQuantity'field>'value' = '99900', 'unit'>'g' converted to kg.",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
     
@@ -666,11 +700,13 @@ def test_api_bleeding():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": True,
+        "variableValue": {
+            "value": True
+        },
         "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Condition', field>'onsetDateTime' = '2019-10-19T00:00:00Z'); 'bleeding' computed from FHIR resource 'Condition' code http://hl7.org/fhir/sid/icd-10-cm I60.0011.",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
       
 
@@ -680,11 +716,13 @@ def test_api_bleeding_no_timestamp():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": True,
+        "variableValue": {
+            "value": True
+        },
         "how": "current as of 2019-10-19T00:00:00Z. (record has no timestamp) 'bleeding' computed from FHIR resource 'Condition' code http://hl7.org/fhir/sid/icd-10-cm I60.0011.",
         "timestamp": None,
         "certitude": 1,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
 
@@ -694,7 +732,9 @@ def test_api_bleeding_no_record():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": None,
+        "variableValue": {
+            "value": None
+        },
         "how": "no record found code " + ",".join(map(lambda a: a["system"] + " " + a["code"], [
             {
                 "system":"http://hl7.org/fhir/sid/icd-10-cm",
@@ -948,7 +988,7 @@ def test_api_bleeding_no_record():
             }
         ])),
         "certitude": 0,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
 
@@ -984,12 +1024,14 @@ def test_api_serum_creatinine_from_data_effectiveDateTime():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": 95,
-        "units": "mg/dL",
+        "variableValue": {
+            "value": 95,
+            "units": "mg/dL"
+        },
         "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveDateTime' = '2019-10-19T00:00:00Z'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
         "timestamp": "2019-10-19T00:00:00Z",
         "certitude": 2,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
     
@@ -1025,12 +1067,14 @@ def test_api_serum_creatinine_from_data_effectiveDateTime_YYYY_MM_DD():
     assert result.status_code == 200
                 
     assert result.json() == [{
-        "value": 95,
-        "units": "mg/dL",
+        "variableValue": {
+            "value": 95,
+            "units": "mg/dL"
+        },
         "how": "current as of 2019-10-19T00:00:00Z. (Date computed from FHIR resource 'Observation', field>'effectiveDateTime' = '2019-10-19'); 'serum creatinine' computed from FHIR resource 'Observation' code http://loinc.org 2160-0, field>'valueQuantity'field>'value' = '95', 'unit'>'mg/dL'.",
         "timestamp": "2019-10-19",
         "certitude": 2,
-        "patientVariableType": pvt
+        "id": pvt["id"]
     }]
 
     

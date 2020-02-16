@@ -106,7 +106,9 @@ def query_records(records, codes, unit, timestamp, clinical_variable, resource_n
     if len(records_filtered) == 0:
         from_code = calculation(codes) 
         return Right({
-            "value": None,
+            "variableValue": {
+                "value": None
+            },
             "certitude": 0,
             "how": f"no record found code {from_code}"
         })
@@ -142,8 +144,10 @@ def query_records(records, codes, unit, timestamp, clinical_variable, resource_n
             from_u = None
         c = calculation_template(clinical_variable, resource_name, timestamp, record, unit)
         return Right({
-            "value": v,
-            **({"units": unit} if unit is not None else {"units": from_u} if from_u is not None else {}),
+            "variableValue": {
+                "value": v,
+                **({"units": unit} if unit is not None else {"units": from_u} if from_u is not None else {}),
+            },
             "certitude": cert,
             "timestamp": ts,
             "how": c
@@ -167,7 +171,9 @@ def one(xs):
         return Right(None)
     else:
         return Left({
-            "value": None,
+            "variableValue": {
+                "value": None
+            },
             "how": "more than one record found",
             "certitude": 0
         })
@@ -225,7 +231,9 @@ def age(patient, unit, timestamp):
 
     if patient == None:
         return Right({
-            "value": None,
+            "variableValue": {
+                "value": None
+            },
             "certitude": 0,
             "how": "record not found"            
         })
@@ -236,14 +244,18 @@ def age(patient, unit, timestamp):
             today = strtodate(timestamp).strftime("%Y-%m-%d")
             mage = calculate_age2(date_of_birth, timestamp)
             return mage.map(lambda age: {
-                "value": age,
-                "units": "year",
+                "variableValue": {
+                    "value": age,
+                    "units": "year"
+                },
                 "certitude": 2,
                 "how": f"Current date '{today}' minus patient's birthdate (FHIR resource 'Patient' field>'birthDate' = '{birth_date}')"
             })
         else:
             return Right({
-                "value": None,
+                "variableValue": {
+                    "value": None
+                },
                 "certitude": 0,
                 "how": "birthDate not set"
             })
@@ -252,7 +264,9 @@ def age(patient, unit, timestamp):
 def sex(patient, unit, timestamp):
     if patient == None:
         return Right({
-            "value": None,
+            "variableValue": {
+                "value": None
+            },
             "certitude": 0,
             "how": "record not found"            
         })
@@ -260,13 +274,17 @@ def sex(patient, unit, timestamp):
         gender = patient.get("gender")
         if gender is None:
             return Right({
-                "value": None,
+                "variableValue": {
+                    "value": None
+                },
                 "certitude": 0,
                 "how": "gender not set"
             })
         else:
             return Right({
-                "value": gender,
+                "variableValue": {
+                    "value": gender
+                },
                 "certitude": 2,
                 "how": f"FHIR resource 'Patient' field>'gender' = {gender}"
             })
@@ -278,7 +296,9 @@ def demographic_extension(url):
         def calculate_demographic(patient):
             if patient == None:
                 return {
-                    "value": None,
+                    "variableValue": {
+                        "value": None
+                    },
                     "certitude": 0,
                     "how": "record not found"            
                 }
@@ -286,7 +306,9 @@ def demographic_extension(url):
                 extension = patient.get("extension")
                 if extension is None:
                     return {
-                        "value": None,
+                        "variableValue": {
+                            "value": None
+                        },
                         "certitude": 0,
                         "how": "extension not found"
                     }
@@ -295,7 +317,9 @@ def demographic_extension(url):
                     filtered = filter(lambda x: x["url"]==url, extension)
                     if len(filtered) == 0:
                         return {
-                            "value": None,
+                            "variableValue": {
+                                "value": None
+                            },
                             "certitude": 0,
                             "how": f"extension not found url {url}"
                         }
@@ -320,7 +344,9 @@ def demographic_extension(url):
                             calculation += " on some extension"
 
                         return {
-                            "value": value,
+                            "variableValue": {
+                                "value": value
+                            },
                             "certitude": certitude,
                             "how": calculation
                         }

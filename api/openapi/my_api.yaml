@@ -29,35 +29,80 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/PatientVariableTypesAndData"
+              $ref: "#/components/schemas/PatientVariablesAndData"
       responses:
         '200':
           description: Successful operation
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/PatientVariables'
+                $ref: '#/components/schemas/PatientVariableValues'
         '400':
           description: Invalid input
         '500':
           description: Internal server error
 components:
   schemas:
-    PatientVariableTypes:
-      type: array
-      items:
-        $ref: "#/components/schemas/PatientVariableType"
-    PatientVariableTypesAndData:
+    PatientVariablesAndData:
       type: object
       properties:
         patientVariables:
-          $ref: "#/components/schemas/PatientVariableTypes"
+          $ref: "#/components/schemas/PatientVariables"
         data:
           type: object
           description: a FHIR bundle
       required:
         - patientVariables
         - data
+      additionalProperties: false
+    PatientVariableValues:
+      type: array
+      items:
+        $ref: "#/components/schemas/PatientVariableValue"
+    PatientVariableValue:
+      type: object
+      required:
+        - id
+        - variableValue
+        - certitude
+        - how
+      properties:
+        id:
+          type: string
+          description: "The id for one of the patient variables supported by this PDS version. If the client does not recognize this id, it should 1) log a warning, 2) not solicit user input for the id, 3) attempt to render the value, and 4) attempt to render the 'how' and 'why' for this unknown variable in the justification section of the client interface, assuming there is one."
+          example: "LOINC:30525-0"
+        title:
+          type: string
+          description: "A non-standardized, human-readable string to describe the patient variable indicated by this id. The 'title' may be implemented by the PDS to aid in debugging, and clients should not depend on this value. The client should have prior knowledge of the supported patient variables, and thus should provide it's own human-readable titles for representation on any end-user interfaces in the appropriate language."
+          example: "Age"
+        variableValue:
+          type: object
+          required:
+            - value
+          properties:
+            value:
+              type: string
+              description: the actual value of the patient variable. If 'pds-retrieve-datum' then retrieve from patient data warehouse, otherwise use the value as-is
+              example: "0.5"
+            units:
+              type: string
+              description: "The unit is standard throughout the pds system. It's up to the guidance plugin to make unit conversions as needed by the guidance model, just as it is up to the dashboard to make unit conversions as needed by the end user."
+              example: "years"
+          description: "The patient variable id maps to only one RequiredPatientVariable, which in turn, defines all the legal values (legalValues) for this id. The legalValues defines the type for the variableValue, and so can be used to inform the client on how to render the variableValue. The client can find the type by calling the '/config' endpoint, matching the 'id' with that in the 'RequiredPatientVariable' schema, and looking up 'legalValues'. The variableValue may also include the 'units' field, which is optional, and if left off, implies the system default units. NOTE: The 'variableValue' is actually an object type, but we use 'string' here to overcome a shortcoming of the swagger ui. This design choice was made in order to prioritize a better interactive documentation experience for the API user."
+          example: {"value": "0.5", "units": "years"}
+        how:
+          type: string
+          description: "A value such as 'The value was specified by the end user.' indicates that any value in the EHR has been overriden by the client via the input values to the endpoint, and they will be simply passed back here."
+          example: "The value was specified by the end user."
+        timestamp:
+          description: "If absent, defaults to current time."
+          type: string
+          format: date-time
+          example: "2019-12-03T13:41:09.942+00:00"
+        certitude:
+          type: int
+          description: The certitude of the value, 0 not certain, 1 somewhat certain, 2 certain
+          example: 2
       additionalProperties: false
     PatientVariables:
       type: array
@@ -66,54 +111,25 @@ components:
     PatientVariable:
       type: object
       required:
-        - value
-        - units
-        - certitude
-        - how
-        - variableType
+        - id
       properties:
-        value:
+        id:
           type: string
-          description: the actual value of the patient variable. If 'pds-retrieve-datum' then retrieve from patient data warehouse, otherwise use the value as-is
-          example: "0.5"
-        units:
-          type: string
-          description: "The unit is standard throughout the pds system. It's up to the guidance plugin to make unit conversions as needed by the guidance model, just as it is up to the dashboard to make unit conversions as needed by the end user."
-          example: "years"
-        certitude:
-          type: int
-          description: The certitude of the value, 0 not certain, 1 somewhat certain, 2 certain
-          example: 2
-        how:
-          type: string
-          description: "If the variable is 'pds-retrieve-datum', then 'how' will read 'The value was specified by the end user.'"
-          example: "The value was specified by the end user."
-        variableType:
-          $ref: '#/components/schemas/PatientVariableType'
-      additionalProperties: false
-    PatientVariableType:
-      type: object
-      required:
-        - title
-        - clinicalFeatureVariable
-        - description
-        - why
-      properties:
+          description: "The id for one of the patient variables supported by this PDS version. The client has the option of ignoring this variable if it doesn't recognize the id."
+          example: "LOINC:30525-0"
         title:
           type: string
+          description: "A non-standardized, human-readable string to describe the id. May be implemented by the PDS to aid in debugging, clients should not depend on this value. NOTE: This value is actually an object type, but we use 'string' here to overcome a shortcoming of the swagger ui. This design choice was made in order to prioritize a better interactive documentation experience for the API user."
           example: "Age"
-        clinicalFeatureVariable:
-          type: string
-          example: "LOINC:30525-0"
+        legalValues:
+          type: object
+          description: "If absent, all values are legal, so treat the value like a string. Use the JSON schema, https://json-schema.org/draft/2019-09/json-schema-validation.html. For example, { type: 'string', 'enum': [ 'Gentamicin', 'Amikacin' ] } to define an enumeration,  { 'type': 'number' } for a float, and { 'type': 'number', 'minimum': '0' } for a positive number, and { 'type': 'integer' } for an integer. The client should have prior knowledge of the supported patient variables, and thus should provide it's own human-readable titles for representation on any end-user interfaces in the appropriate language. NOTE: This value is actually an object type, but we use 'string' here to overcome a shortcoming of the swagger ui. This design choice was made in order to prioritize a better interactive documentation experience for the API user. "
+          example: { "type": "number", "minimum": "0" }
         units:
           type: string
-          description: "The unit is standard throughout the pds system. It's up to the guidance plugin to make unit conversions as needed by the guidance model, just as it is up to the dashboard to make unit conversions as needed by the end user."
-          example: "years"
-        description: 
-          type: string
-          example: "Age is a floating point number; e.g., a 6 month old child is 0.5 years."
         why:
           type: string
+          description: "Provides the client with a human-readable, non-standard justification for why the plugin needs this particular variable. This can be rendered by the client to provide the end-user with rationale for the patient values, but does not address how the value was computed."
           example: "Age is used to calculate the creatinine clearance. Dosing is lower for geriatric patient and contraindicated for pediatric patients"
       additionalProperties: false
         

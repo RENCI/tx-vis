@@ -19,7 +19,7 @@ def add_status_code(v):
 
 def add_variable(v):
     def add_variable_to_value(val):
-        return {**val, "patientVariableType": v}
+        return {**val, "id": v}
     return add_variable_to_value
     
 
@@ -33,7 +33,7 @@ def lookupClinicalsFromData(patient_id, timestamp, clinical_feature_variables_an
 
 
 def lookupClinicalFromRecord(patient_id, data, v, timestamp):
-    clinical = v["clinicalFeatureVariable"]
+    clinical = v["id"]
     unit = v.get("units")
     filter_data, feature, unit2 = mapping.get(clinical)
     if unit is None:
@@ -41,6 +41,6 @@ def lookupClinicalFromRecord(patient_id, data, v, timestamp):
     if feature is None:
         return Left((f"cannot find mapping for {clinical}", 400))
     else:
-        return filter_data(patient_id, data).bind(lambda records: feature(records, unit, timestamp)).map(add_variable(v))
+        return filter_data(patient_id, data).bind(lambda records: feature(records, unit, timestamp)).map(add_variable(clinical))
     
 
