@@ -2,19 +2,9 @@ from tx.fhir.utils import unbundle
 from tx.dateutils.utils import tstostr, strtots, strtodate
 from datetime import datetime, date
 import os
-import requests
 import re
 from oslash import Left, Right
-from tx.requests.utils import get, post
 from tx.pint.utils import convert
-
-
-pds_host = os.environ["PDS_HOST"]
-pds_port = os.environ["PDS_PORT"]
-
-
-def pdsdpi_url_base(plugin):
-    return f"http://{pds_host}:{pds_port}/v1/plugin/{plugin}"
 
 
 def extract_key(a):
