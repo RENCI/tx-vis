@@ -1,14 +1,15 @@
 version: '3.4'
 services:
   
-  pdsphenotypemapping:
+  pdspi-example:
     build:
       context: .
     restart: always
     environment:
       PDS_HOST: $PDS_HOST
       PDS_PORT: $PDS_PORT
+      PDS_VERSION: $PDS_VERSION
     ports:
-      - $PDSPHENOTYPEMAPPING_PORT:8080
+      - $API_PORT:8080
 
     

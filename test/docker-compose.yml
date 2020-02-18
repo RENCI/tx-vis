@@ -1,12 +1,12 @@
 version: '3.4'
 services:
   
-  pdsphenotypemapping-test:
+  pdspi-example-test:
     build:
       context: test
-    command: ["-s", "-vv", "-x"] # , "-k", "test_api_age"]
+    command: []
     depends_on:
-      - pdsphenotypemapping
+      - pdspi-example
 
 
 
