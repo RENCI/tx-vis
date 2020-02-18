@@ -13,7 +13,7 @@ config = {
 
 
 def test_config():
-    resp = requests.get("http://pdspi-example:8080/config")
+    resp = requests.get("http://pdspi-example:8080/config", headers=json_headers)
 
     assert resp.status_code == 200
     assert resp.json() == config
