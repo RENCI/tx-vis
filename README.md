@@ -1,8 +1,10 @@
-[![Build Status](https://travis-ci.com/RENCI/pdspi-mapper-example.svg?branch=master)](https://travis-ci.com/RENCI/pdspi-mapper-example)
+[![Build Status](https://travis-ci.com/RENCI/pdspi-example.svg?branch=master)](https://travis-ci.com/RENCI/pdspi-example)
 
 # pdspi-plugin-example
 
 ### What does this plug-in do?
+
+An example pluging.
 
 ### build docker image
 
