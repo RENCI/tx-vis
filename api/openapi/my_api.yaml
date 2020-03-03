@@ -1,14 +1,14 @@
 openapi: 3.0.0
 info:
   description: 
-    This is a pds mapper plugin.
+    This is a visualization plugin to create specs for dashboard visualization.
   version: "1.0.0"
-  title: Mapper plugin
-  contact:
-    email: you@your-company.com
-  license:
-    name: MIT
-    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  title: Visualization plugin
+tags:
+  - name: visualization
+    description: visualization
+  - name: vega-lite
+    description: high-level grammar of interactive graphics in JSON format
 paths:
   /config:
     get:
