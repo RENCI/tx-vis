@@ -1,10 +1,13 @@
-[![Build Status](https://travis-ci.com/RENCI/pdspi-example.svg?branch=master)](https://travis-ci.com/RENCI/pdspi-example)
+[![Build Status](https://travis-ci.com/RENCI/tx-vis.svg?branch=master)](https://travis-ci.com/RENCI/tx-vis)
 
-# pdspi-plugin-example
+# tx-vis convenience plugin
 
 ### What does this plug-in do?
 
-An example pluging.
+It creates desired [vega-lite](https://vega.github.io/vega-lite/) specs for visualization on PDS dashboard. 
+Currently, it is used by guidance plugin to create desired 
+visualization on the dashboard, but is general enough to be used 
+by any other PDS plugin as needed. 
 
 ### build docker image
 
@@ -27,4 +30,3 @@ example `docker-compose.yml`
 ```
 test/test.sh
 ```
-
