@@ -21,6 +21,97 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Config'
+              example:
+                {
+                  "title": "Visualization spec generator",
+                  "piid": "tx-vis",
+                  "pluginType": "c",
+                  "pluginParameters": [ {
+                     "typeid": "line_chart",
+                     "typeDescription": "Line chart visualization type",
+                     "legalParameters": [ {
+                                            "value_type": "string",
+                                            "name": "x_axis_title"
+                                          },
+                                          {
+                                            "value_type": "string",
+                                            "name": "y_axis_title"
+                                          } ]
+                   },
+                   {
+                     "typeid": "multiple_line_chart",
+                     "typeDescription": "Multiple Line chart visualization type",
+                     "legalParameters": [{
+                                           "value_type": "string",
+                                           "name": "x_axis_title"
+                                         },
+                                         {
+                                           "value_type": "string",
+                                           "name": "y_axis_title"
+                                         } ]
+                   } ]
+                }
+        '400':
+          description: "Bad Request"
+          content:
+            application/json:
+              schema: {}
+        '500':
+          description: "Internal Server Error"
+          content:
+            application/json:
+              schema: {}
+  /vega_spec:
+    post:
+      summary: Given a visualization type id and visualization parameters, return the vega spec for visualization
+      operationId: api.get_vega_spec
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VegaSpecInputs'
+            example:
+              {
+                "typeid": "line_chart",
+                "x_axis_title": "Time",
+                "y_axis_title": "Drug Dosage"
+              }
+      responses:
+        '200':
+          description: "Vega spec matching query"
+          content:
+            application/json:
+              schema: {}
+              example: {
+                "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+                "autosize": {
+                  "resize": true
+                },
+                "data": {
+                  "name": "data"
+                },
+                "description": "Time-series line chart",
+                "encoding": {
+                  "x": {
+                    "axis": {
+                      "title": "x axis"
+                    },
+                    "field": "x",
+                    "type": "quantitative"
+                  },
+                  "y": {
+                    "axis": {
+                      "title": "y axis"
+                    },
+                    "field": "y",
+                    "type": "quantitative"
+                  }
+                },
+                "height": "container",
+                "mark": "line",
+                "title": "Line chart",
+                "width": "container"
+              }
         '400':
           description: "Bad Request"
           content:
@@ -36,21 +127,23 @@ components:
     Config:
       type: object
       required:
+        - piid
         - pluginType
+        - pluginParameters
       properties:
         title:
           type: string
           description: "Meaningful name for this plugin"
-          example: "DOAC variable mapper"
+          example: "Visualization mapper"
         piid:
           type: string
           description: "A string, unique to this deployment, used to identify this plugin in realtime"
-          example: "pdspi-mapper-DOAC"
+          example: "tx-vis"
         pluginType:
           type: string
           enum: [e,g,m,f]
           description: "A value from the enumeration below identifying the plugin type. 'g'=Guidance, 'c'=convenience, 'm'=mapper, 'f'=FHIR data server. In the clinical arena, only one FHIR server and only one mapper is allowed, and this can be indicated either with the defaults, or by only installing one mapper and one FHIR plugin type."
-          example: "m"
+          example: "c"
         pluginTypeTitle:
           type: string
           description: "A human-readable value for the type. 'g'=Guidance, 'c'=Convenience, 'm'=Mapping, 'f'=FHIR"
@@ -59,30 +152,62 @@ components:
           items:
             type: string
             description: "An array of container names upon which the plugin in question depends. For example, 'txscience/pds-fhir-example:0.2.0'. Mapper plugins must indicate a dependency on one or more FHIR plugins, but dependencies are discouraged otherwise in order to maintain the decoupling and reuse of plugins. Every plugin of type 'm' must have at least one 'f' plugin listed in pluginDependencies, otherwise return 500."
-        pluginSelectors:
-          description: "Maps the piid to a set of selector values."
+        pluginParameters:
+          description: "typed values for input parameters that might be required by the plugin"
           type: array
           items:
-            $ref: '#/components/schemas/Selector'
-    Selector:
-      description: "Used for selecting plugins"
+            $ref: '#/components/schemas/PluginParameter'
+
+    PluginParameter:
       type: object
       required:
-        - id
+        - typeid
+        - legalParameters
       properties:
-        title:
+        typeid:
           type: string
-          example: "FHIR URI - an URL (locator) or an URN (unique name)"
-          description: "Human-readable name for this selector type."
-        id:
+          description: "The visualization type id for one of the parameters used by the plugin in question. Parameters are completely defined by the plugin and need not be interchangable with other plugins. The client will have no prior knowledge for plugin parameters."
+          example: "line_chart"
+        typeDescription:
           type: string
-          description: "The client should have prior knowledge of the full list of selectors available with this version of the mapper. This id is used to determine which selector type is described."
-          example: "FHIR.URI"
-        selectorValue:
+          description: "A non-standardized, human-readable string to describe the visualizatoin typeid. Clients should not depend on this value."
+          example: "Line chart visualization type"
+        legalParameters:
+          type: array
+          description: "Supported sets of input parameters for the plugin"
+          items:
+            $ref: '#/components/schemas/LegalParameter'
+
+    LegalParameter:
+      type: object
+      required:
+        - value_type
+        - name
+      properties:
+        value_type:
           type: string
-          description: "Unique identifier for this type. Stylistically, community standard coding system used for this type will preface the code used, e.g., http://fhir.org or urn://cdwh.nctracs.v1. The title in the example is optional. NOTE: This value is actually an object type, but we use 'string' here to overcome a shortcoming of the swagger ui. This design choice was made in order to prioritize a better interactive documentation experience for the API user. "
-          example: {"value": "http://hapi.fhir.org/baseR4", "title": "Hapi FHIR base URL"}
-        legalValues:
-          type: object
-          description: "If absent, all values are legal, so treat the value like a string. Use the JSON schema, https://json-schema.org/draft/2019-09/json-schema-validation.html. For example, { type: 'string', 'enum': [ 'Gentamicin', 'Amikacin' ] } to define an enumeration,  { 'type': 'number' } for a float, and { 'type': 'number', 'minimum': '0' } for a positive number, and { 'type': 'integer' } for an integer. Furthermore, a non-standard 'title' can be added in support of a human-readable string for the type's value. This maybe be implemented by the PDS to aid in debugging, however clients should not depend on this value. NOTE: This value is actually an object type, but we use 'string' here to overcome a shortcoming of the swagger ui. This design choice was made in order to prioritize a better interactive documentation experience for the API user."
-          example: { "type": "string", "enum": [{"value": "urn://cdwh.nctracs.v1", "title": "NCTraCS Carolina Data Warehouse"},{"value": "http://hapi.fhir.org/baseR4"},{"value": "https://open-ic.epic.com/FHIR/api/FHIR/DSTU2"}] }
+          description: "type of the value for the parameter"
+          example: "string"
+        name:
+          type: string
+          description: "name of the parameter to be customized for the visualization"
+          example: "x_axis_title"
+
+    VegaSpecInputs:
+      type: object
+      properties:
+        typeid:
+          type: string
+          description: "type of the visualization chart to return spec for"
+          default: "line_chart"
+          example: "multiple_line_chart"
+        x_axis_title:
+          type: string
+            description: "customize title of the x axis for the visualization chart"
+            default: "x axis"
+            example: "Time"
+        y_axis_title:
+          type: string
+            description: "customize title of the y axis for the visualization chart"
+            default: "y axis"
+            example: "Drug Dosage"
