@@ -6,4 +6,4 @@ branches:
     - master
 
 script:
-  - /bin/bash hooks/test
+  - test/test.sh
