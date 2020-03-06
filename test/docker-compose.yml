@@ -1,14 +1,9 @@
 version: '3.4'
 services:
   
-  pdspi-example-test:
+  tx-vis-test:
     build:
       context: test
     command: []
     depends_on:
-      - pdspi-example
-
-
-
-    
-    
+      - tx-vis

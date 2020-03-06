@@ -1,7 +1,7 @@
 version: '3.4'
 services:
   
-  pdspi-example:
+  tx-vis:
     build:
       context: .
     restart: always
@@ -11,5 +11,3 @@ services:
       PDS_VERSION: $PDS_VERSION
     ports:
       - $API_PORT:8080
-
-    
