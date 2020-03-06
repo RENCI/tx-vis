@@ -8,7 +8,7 @@ type_mapping_dict = {
 config = {
     "title": "Visualization spec generator",
     "piid": "tx-vis",
-    "pluginType": "convenience",
+    "pluginType": "c",
     "pluginParameters": [ {
         "typeid": "line_chart",
         "typeDescription": "Line chart visualization type",
