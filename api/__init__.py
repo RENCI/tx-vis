@@ -1,8 +1,8 @@
 import subprocess
 
 type_mapping_dict = {
-    'line_chart': 'templates/vega-lite-line-chart.dhall',
-    'multiple_line_chart': 'templates/vega-lite-multi-line-chart.dhall'
+    'line_chart': 'api/templates/vega-lite-line-chart.dhall',
+    'multiple_line_chart': 'api/templates/vega-lite-multi-line-chart.dhall'
 }
 
 config = {
