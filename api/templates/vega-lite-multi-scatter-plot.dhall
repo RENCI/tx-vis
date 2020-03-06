@@ -42,7 +42,7 @@
                       , mapValue =
                           json.object
                             [ { mapKey = "title"
-                              , mapValue = json.string "x axis"
+                              , mapValue = json.string x_axis_title
                               }
                             ]
                       }
@@ -57,7 +57,7 @@
                       , mapValue =
                           json.object
                             [ { mapKey = "title"
-                              , mapValue = json.string "y axis"
+                              , mapValue = json.string y_axis_title
                               }
                             ]
                       }

@@ -3,7 +3,11 @@ import json
 
 type_mapping_dict = {
     'line_chart': 'api/templates/vega-lite-line-chart.dhall',
-    'multiple_line_chart': 'api/templates/vega-lite-multi-line-chart.dhall'
+    'multiple_line_chart': 'api/templates/vega-lite-multi-line-chart.dhall',
+    'area_chart': 'api/templates/vega-lite-area-chart.dhall',
+    'scatter_plot': 'api/templates/vega-lite-scatter-plot.dhall',
+    'multiple_scatter_plot': 'api/templates/vega-lite-multi-scatter-plot.dhall',
+    'histogram': 'api/templates/vega-lite-histogram.dhall'
 }
 
 config = {
