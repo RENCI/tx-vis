@@ -46,7 +46,26 @@ vega_spec_input = {
 }
 
 vega_spec_output = {
-
+    "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
+    "title": "Line chart",
+    "description": "Time-series line chart",
+    "width": "container",
+    "height": "container",
+    "autosize": { "resize": True },
+    "data": { "name": "data" },
+    "mark": "line",
+    "encoding": {
+        "x": {
+            "field": "x",
+            "type": "quantitative",
+            "axis": { "title": "Time" }
+        },
+        "y": {
+            "field": "y",
+            "type": "quantitative",
+            "axis": { "title": "Drug Dosage" }
+        }
+    }
 }
 
 
@@ -55,7 +74,7 @@ def test_vega_spec():
 
     assert resp.status_code == 200
     output = resp.json()
-    assert "Time" in output and "Drug Doesage" in output
+    assert output == vega_spec_output
 
 
 def test_config():
