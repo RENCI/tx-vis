@@ -1,4 +1,5 @@
 import subprocess
+import json
 
 type_mapping_dict = {
     'line_chart': 'api/templates/vega-lite-line-chart.dhall',
@@ -68,5 +69,7 @@ def get_vega_spec(body):
     y_axis_title = body['y_axis_title'] if 'y_axis_title' in body else 'y axis'
 
     vis_spec = get_vega_spec_util(type=type_id, x_axis_title=x_axis_title, y_axis_title=y_axis_title)
+    # convert returned bytes to str
+    vis_spec = vis_spec.decode("utf-8")
 
-    return vis_spec
+    return json.loads(vis_spec)
