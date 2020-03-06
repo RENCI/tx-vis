@@ -203,11 +203,11 @@ components:
           example: "multiple_line_chart"
         x_axis_title:
           type: string
-            description: "customize title of the x axis for the visualization chart"
-            default: "x axis"
-            example: "Time"
+          description: "customize title of the x axis for the visualization chart"
+          default: "x axis"
+          example: "Time"
         y_axis_title:
           type: string
-            description: "customize title of the y axis for the visualization chart"
-            default: "y axis"
-            example: "Drug Dosage"
+          description: "customize title of the y axis for the visualization chart"
+          default: "y axis"
+          example: "Drug Dosage"
