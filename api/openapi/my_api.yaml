@@ -36,6 +36,14 @@ paths:
                                           {
                                             "value_type": "string",
                                             "name": "y_axis_title"
+                                          },
+                                          {
+                                            "value_type": "string",
+                                            "name": "chart_title"
+                                          },
+                                          {
+                                            "value_type": "string",
+                                            "name": "chart_description"
                                           } ]
                   },
                   {
@@ -48,6 +56,14 @@ paths:
                                          {
                                            "value_type": "string",
                                            "name": "y_axis_title"
+                                         },
+                                         {
+                                           "value_type": "string",
+                                           "name": "chart_title"
+                                         },
+                                         {
+                                           "value_type": "string",
+                                           "name": "chart_description"
                                          } ]
                   },
                   {
@@ -60,7 +76,15 @@ paths:
                                         {
                                           "type": "string",
                                           "name": "y_axis_title"
-                                        }]
+                                        },
+                                        {
+                                          "value_type": "string",
+                                          "name": "chart_title"
+                                        },
+                                        {
+                                          "value_type": "string",
+                                          "name": "chart_description"
+                                        } ]
                   },
                   {
                     "typeid": "scatter_plot",
@@ -72,7 +96,15 @@ paths:
                                         {
                                           "type": "string",
                                           "name": "y_axis_title"
-                                        }]
+                                        },
+                                        {
+                                          "value_type": "string",
+                                          "name": "chart_title"
+                                        },
+                                        {
+                                          "value_type": "string",
+                                          "name": "chart_description"
+                                        } ]
                   },
                   {
                     "typeid": "multiple_scatter_plot",
@@ -84,7 +116,15 @@ paths:
                                         {
                                           "type": "string",
                                           "name": "y_axis_title"
-                                        }]
+                                        },
+                                        {
+                                          "value_type": "string",
+                                          "name": "chart_title"
+                                        },
+                                        {
+                                          "value_type": "string",
+                                          "name": "chart_description"
+                                        } ]
                   },
                   {
                     "typeid": "histogram",
@@ -96,7 +136,15 @@ paths:
                                         {
                                           "type": "string",
                                           "name": "y_axis_title"
-                                        }]
+                                        },
+                                        {
+                                          "value_type": "string",
+                                          "name": "chart_title"
+                                        },
+                                        {
+                                          "value_type": "string",
+                                          "name": "chart_description"
+                                        } ]
                   } ]
                 }
         '400':
@@ -122,7 +170,9 @@ paths:
               {
                 "typeid": "line_chart",
                 "x_axis_title": "Time",
-                "y_axis_title": "Drug Dosage"
+                "y_axis_title": "Drug Dosage",
+                "chart_title": "Line chart",
+                "chart_description": "This is a line chart"
               }
       responses:
         '200':
@@ -259,3 +309,13 @@ components:
           description: "customize title of the y axis for the visualization chart"
           default: "y axis"
           example: "Drug Dosage"
+        chart_title:
+          type: string
+          description: "customize title for the visualization chart"
+          default: "Line chart"
+          example: "Line chart"
+        chart_description:
+          type: string
+          description: "customize description for the visualization chart"
+          default: "Time-series line chart"
+          example: "Time-series line chart"

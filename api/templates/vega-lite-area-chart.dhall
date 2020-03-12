@@ -22,7 +22,7 @@
           json.object [ { mapKey = "name", mapValue = json.string "data" } ]
       }
     , { mapKey = "description"
-      , mapValue = json.string "Time-series area chart"
+      , mapValue = json.string chart_desc
       }
     , { mapKey = "encoding"
       , mapValue =
@@ -61,6 +61,6 @@
       }
     , { mapKey = "height", mapValue = json.string "container" }
     , { mapKey = "mark", mapValue = json.string "area" }
-    , { mapKey = "title", mapValue = json.string "Area chart" }
+    , { mapKey = "title", mapValue = json.string chart_title }
     , { mapKey = "width", mapValue = json.string "container" }
     ]

@@ -23,7 +23,15 @@ config = {
         {
             "type": "string",
             "name": "y_axis_title"
-        } ]
+        },
+        {
+          "type": "string",
+          "name": "chart_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_description"
+        }  ]
     },
     {
         "typeid": "Multiple_line_chart",
@@ -35,6 +43,14 @@ config = {
         {
             "type": "string",
             "name": "y_axis_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_description"
         } ]
     },
     {
@@ -47,7 +63,15 @@ config = {
         {
             "type": "string",
             "name": "y_axis_title"
-        }]
+        },
+        {
+          "type": "string",
+          "name": "chart_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_description"
+        } ]
     },
     {
         "typeid": "scatter_plot",
@@ -59,7 +83,15 @@ config = {
         {
             "type": "string",
             "name": "y_axis_title"
-        }]
+        },
+        {
+          "type": "string",
+          "name": "chart_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_description"
+        } ]
     },
     {
         "typeid": "multiple_scatter_plot",
@@ -71,7 +103,15 @@ config = {
         {
             "type": "string",
             "name": "y_axis_title"
-        }]
+        },
+        {
+          "type": "string",
+          "name": "chart_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_description"
+        } ]
     },
     {
         "typeid": "histogram",
@@ -83,20 +123,30 @@ config = {
         {
             "type": "string",
             "name": "y_axis_title"
-        }]
+        },
+        {
+          "type": "string",
+          "name": "chart_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_description"
+        } ]
     } ]
 }
 
 vega_spec_input = {
-  "typeid": "line_chart",
-  "x_axis_title": "Time",
-  "y_axis_title": "Drug Dosage"
+    "typeid": "line_chart",
+    "x_axis_title": "Time",
+    "y_axis_title": "Drug Dosage",
+    "chart_title": "Line chart",
+    "chart_description": "This is a line chart"
 }
 
 vega_spec_output = {
     "$schema": "https://vega.github.io/schema/vega-lite/v4.json",
     "title": "Line chart",
-    "description": "Time-series line chart",
+    "description": "This is a line chart",
     "width": "container",
     "height": "container",
     "autosize": { "resize": True },

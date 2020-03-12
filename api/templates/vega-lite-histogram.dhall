@@ -21,7 +21,7 @@
       , mapValue =
           json.object [ { mapKey = "name", mapValue = json.string "data" } ]
       }
-    , { mapKey = "description", mapValue = json.string "Histogram" }
+    , { mapKey = "description", mapValue = json.string chart_desc }
     , { mapKey = "encoding"
       , mapValue =
           json.object
@@ -60,6 +60,6 @@
       }
     , { mapKey = "height", mapValue = json.string "container" }
     , { mapKey = "mark", mapValue = json.string "bar" }
-    , { mapKey = "title", mapValue = json.string "Histogram" }
+    , { mapKey = "title", mapValue = json.string chart_title }
     , { mapKey = "width", mapValue = json.string "container" }
     ]

@@ -22,7 +22,7 @@
           json.object [ { mapKey = "name", mapValue = json.string "data" } ]
       }
     , { mapKey = "description"
-      , mapValue = json.string "Multiple time-series line chart"
+      , mapValue = json.string chart_desc
       }
     , { mapKey = "encoding"
       , mapValue =
@@ -69,7 +69,7 @@
     , { mapKey = "height", mapValue = json.string "container" }
     , { mapKey = "mark", mapValue = json.string "line" }
     , { mapKey = "title"
-      , mapValue = json.string "Multiple time-series Line chart"
+      , mapValue = json.string chart_title
       }
     , { mapKey = "width", mapValue = json.string "container" }
     ]

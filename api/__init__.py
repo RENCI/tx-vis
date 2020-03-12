@@ -24,6 +24,14 @@ config = {
         {
             "type": "string",
             "name": "y_axis_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_description"
         } ]
     },
     {
@@ -36,6 +44,14 @@ config = {
         {
             "type": "string",
             "name": "y_axis_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_description"
         } ]
     },
     {
@@ -48,6 +64,14 @@ config = {
         {
             "type": "string",
             "name": "y_axis_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_description"
         }]
     },
     {
@@ -60,6 +84,14 @@ config = {
         {
             "type": "string",
             "name": "y_axis_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_description"
         }]
     },
     {
@@ -72,6 +104,14 @@ config = {
         {
             "type": "string",
             "name": "y_axis_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_description"
         }]
     },
     {
@@ -84,12 +124,21 @@ config = {
         {
             "type": "string",
             "name": "y_axis_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_description"
         }]
     } ]
 }
 
 
-def get_vega_spec_util(type="line_chart", x_axis_title="x axis", y_axis_title="y axis"):
+def get_vega_spec_util(type="line_chart", x_axis_title="x axis", y_axis_title="y axis",
+                       title="Line chart", desc="Time-series line chart"):
 
     if type in type_mapping_dict:
         template_fn = type_mapping_dict[type]
@@ -98,7 +147,9 @@ def get_vega_spec_util(type="line_chart", x_axis_title="x axis", y_axis_title="y
 
     with open(template_fn, 'r') as fp:
         template_data = fp.read().replace('\n', '')
-        let_string = 'let x_axis_title="' + x_axis_title + '" let y_axis_title="' + y_axis_title + '" in '
+        let_string = 'let x_axis_title="' + x_axis_title + '" let y_axis_title="' + \
+                     y_axis_title + '" let chart_title="' + title + \
+                     '" let chart_desc="' + desc + '" in '
         data = '{} {}'.format(let_string, template_data)
         cmd = "echo '" + data + "' | dhall-to-json"
         proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -108,7 +159,7 @@ def get_vega_spec_util(type="line_chart", x_axis_title="x axis", y_axis_title="y
 
         return stdout
 
-    raise FileNotFoundError("Cannot read khall configuration template file")
+    raise FileNotFoundError("Cannot read dhall configuration template file")
 
 
 def get_config():
@@ -119,8 +170,10 @@ def get_vega_spec(body):
     type_id = body['typeid'] if 'typeid' in body else 'line_chart'
     x_axis_title = body['x_axis_title'] if 'x_axis_title' in body else 'x axis'
     y_axis_title = body['y_axis_title'] if 'y_axis_title' in body else 'y axis'
-
-    vis_spec = get_vega_spec_util(type=type_id, x_axis_title=x_axis_title, y_axis_title=y_axis_title)
+    title = body['chart_title'] if 'chart_title' in body else 'Line chart'
+    desc = body['chart_description'] if 'chart_description' in body else 'Time-series line chart'
+    vis_spec = get_vega_spec_util(type=type_id, x_axis_title=x_axis_title,
+                                  y_axis_title=y_axis_title, title=title, desc=desc)
     # convert returned bytes to str
     vis_spec = vis_spec.decode("utf-8")
 
