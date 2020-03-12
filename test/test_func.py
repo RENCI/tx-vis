@@ -36,6 +36,54 @@ config = {
             "type": "string",
             "name": "y_axis_title"
         } ]
+    },
+    {
+        "typeid": "area_chart",
+        "typeDescription": "Area chart visualization type",
+        "legalParameters": [{
+            "type": "string",
+            "name": "x_axis_title"
+        },
+        {
+            "type": "string",
+            "name": "y_axis_title"
+        }]
+    },
+    {
+        "typeid": "scatter_plot",
+        "typeDescription": "scatter plot visualization type",
+        "legalParameters": [{
+            "type": "string",
+            "name": "x_axis_title"
+        },
+        {
+            "type": "string",
+            "name": "y_axis_title"
+        }]
+    },
+    {
+        "typeid": "multiple_scatter_plot",
+        "typeDescription": "multiple scatter plot visualization type",
+        "legalParameters": [{
+            "type": "string",
+            "name": "x_axis_title"
+        },
+        {
+            "type": "string",
+            "name": "y_axis_title"
+        }]
+    },
+    {
+        "typeid": "histogram",
+        "typeDescription": "histogram visualization type",
+        "legalParameters": [{
+            "type": "string",
+            "name": "x_axis_title"
+        },
+        {
+            "type": "string",
+            "name": "y_axis_title"
+        }]
     } ]
 }
 
