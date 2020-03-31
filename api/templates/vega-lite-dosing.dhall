@@ -21,82 +21,70 @@
       , mapValue =
           json.object [ { mapKey = "name", mapValue = json.string "data" } ]
       }
-    , { mapKey = "description", mapValue = json.string "Dosing data" }
+    , { mapKey = "description"
+      , mapValue = json.string chart_desc
+      }
     , { mapKey = "height", mapValue = json.string "container" }
     , { mapKey = "layer"
       , mapValue =
           json.array
             [ json.object
-                [ { mapKey = "encoding"
+                [ { mapKey = "layer"
                   , mapValue =
-                      json.object
-                        [ { mapKey = "x"
-                          , mapValue =
-                              json.object
-                                [ { mapKey = "field"
-                                  , mapValue = json.string "x"
-                                  }
-                                , { mapKey = "type"
-                                  , mapValue = json.string "quantitative"
-                                  }
-                                ]
-                          }
-                        , { mapKey = "y"
-                          , mapValue =
-                              json.object
-                                [ { mapKey = "field"
-                                  , mapValue = json.string "y"
-                                  }
-                                , { mapKey = "type"
-                                  , mapValue = json.string "quantitative"
-                                  }
-                                ]
-                          }
+                      json.array
+                        [ json.object
+                            [ { mapKey = "encoding"
+                              , mapValue =
+                                  json.object
+                                    [ { mapKey = "color"
+                                      , mapValue =
+                                          json.object
+                                            [ { mapKey = "field"
+                                              , mapValue = json.string "group"
+                                              }
+                                            , { mapKey = "type"
+                                              , mapValue = json.string "nominal"
+                                              }
+                                            ]
+                                      }
+                                    , { mapKey = "y"
+                                      , mapValue =
+                                          json.object
+                                            [ { mapKey = "field"
+                                              , mapValue = json.string "y"
+                                              }
+                                            , { mapKey = "type"
+                                              , mapValue =
+                                                  json.string "quantitative"
+                                              }
+                                            ]
+                                      }
+                                    ]
+                              }
+                            , { mapKey = "mark"
+                              , mapValue =
+                                  json.object
+                                    [ { mapKey = "strokeDash"
+                                      , mapValue =
+                                          json.array
+                                            [ json.integer +5, json.integer +5 ]
+                                      }
+                                    , { mapKey = "type"
+                                      , mapValue = json.string "rule"
+                                      }
+                                    ]
+                              }
+                            ]
                         ]
                   }
-                , { mapKey = "mark"
+                , { mapKey = "transform"
                   , mapValue =
-                      json.object
-                        [ { mapKey = "opacity", mapValue = json.double 0.5 }
-                        , { mapKey = "type", mapValue = json.string "area" }
-                        ]
-                  }
-                ]
-            , json.object
-                [ { mapKey = "encoding"
-                  , mapValue =
-                      json.object
-                        [ { mapKey = "x"
-                          , mapValue =
-                              json.object
-                                [ { mapKey = "field"
-                                  , mapValue = json.string "x"
-                                  }
-                                , { mapKey = "type"
-                                  , mapValue = json.string "quantitative"
-                                  }
-                                ]
-                          }
-                        , { mapKey = "y"
-                          , mapValue =
-                              json.object
-                                [ { mapKey = "field"
-                                  , mapValue = json.string "y"
-                                  }
-                                , { mapKey = "type"
-                                  , mapValue = json.string "quantitative"
-                                  }
-                                ]
-                          }
-                        ]
-                  }
-                , { mapKey = "mark"
-                  , mapValue =
-                      json.object
-                        [ { mapKey = "strokeJoin"
-                          , mapValue = json.string "round"
-                          }
-                        , { mapKey = "type", mapValue = json.string "line" }
+                      json.array
+                        [ json.object
+                            [ { mapKey = "filter"
+                              , mapValue = json.string "datum.x == null"
+                              }
+                            ]
                         ]
                   }
                 ]
@@ -108,7 +96,178 @@
                             [ { mapKey = "encoding"
                               , mapValue =
                                   json.object
-                                    [ { mapKey = "x"
+                                    [ { mapKey = "color"
+                                      , mapValue =
+                                          json.object
+                                            [ { mapKey = "field"
+                                              , mapValue = json.string "group"
+                                              }
+                                            , { mapKey = "type"
+                                              , mapValue = json.string "nominal"
+                                              }
+                                            ]
+                                      }
+                                    , { mapKey = "x"
+                                      , mapValue =
+                                          json.object
+                                            [ { mapKey = "axis"
+                                              , mapValue =
+                                                  json.object
+                                                    [ { mapKey = "title"
+                                                      , mapValue =
+                                                          json.string x_axis_title
+                                                      }
+                                                    ]
+                                              }
+                                            , { mapKey = "field"
+                                              , mapValue = json.string "x"
+                                              }
+                                            , { mapKey = "type"
+                                              , mapValue =
+                                                  json.string "quantitative"
+                                              }
+                                            ]
+                                      }
+                                    , { mapKey = "y"
+                                      , mapValue =
+                                          json.object
+                                            [ { mapKey = "axis"
+                                              , mapValue =
+                                                  json.object
+                                                    [ { mapKey = "title"
+                                                      , mapValue =
+                                                          json.string y_axis_title
+                                                      }
+                                                    ]
+                                              }
+                                            , { mapKey = "field"
+                                              , mapValue = json.string "y"
+                                              }
+                                            , { mapKey = "type"
+                                              , mapValue =
+                                                  json.string "quantitative"
+                                              }
+                                            ]
+                                      }
+                                    ]
+                              }
+                            , { mapKey = "mark"
+                              , mapValue =
+                                  json.object
+                                    [ { mapKey = "opacity"
+                                      , mapValue = json.double 0.25
+                                      }
+                                    , { mapKey = "type"
+                                      , mapValue = json.string "area"
+                                      }
+                                    ]
+                              }
+                            ]
+                        ]
+                  }
+                , { mapKey = "transform"
+                  , mapValue =
+                      json.array
+                        [ json.object
+                            [ { mapKey = "filter"
+                              , mapValue =
+                                  json.string
+                                    "datum.group === 'guidance' && datum.x != null"
+                              }
+                            ]
+                        ]
+                  }
+                ]
+            , json.object
+                [ { mapKey = "layer"
+                  , mapValue =
+                      json.array
+                        [ json.object
+                            [ { mapKey = "encoding"
+                              , mapValue =
+                                  json.object
+                                    [ { mapKey = "color"
+                                      , mapValue =
+                                          json.object
+                                            [ { mapKey = "field"
+                                              , mapValue = json.string "group"
+                                              }
+                                            , { mapKey = "type"
+                                              , mapValue = json.string "nominal"
+                                              }
+                                            ]
+                                      }
+                                    , { mapKey = "x"
+                                      , mapValue =
+                                          json.object
+                                            [ { mapKey = "field"
+                                              , mapValue = json.string "x"
+                                              }
+                                            , { mapKey = "type"
+                                              , mapValue =
+                                                  json.string "quantitative"
+                                              }
+                                            ]
+                                      }
+                                    , { mapKey = "y"
+                                      , mapValue =
+                                          json.object
+                                            [ { mapKey = "field"
+                                              , mapValue = json.string "y"
+                                              }
+                                            , { mapKey = "type"
+                                              , mapValue =
+                                                  json.string "quantitative"
+                                              }
+                                            ]
+                                      }
+                                    ]
+                              }
+                            , { mapKey = "mark"
+                              , mapValue =
+                                  json.object
+                                    [ { mapKey = "strokeJoin"
+                                      , mapValue = json.string "round"
+                                      }
+                                    , { mapKey = "type"
+                                      , mapValue = json.string "line"
+                                      }
+                                    ]
+                              }
+                            ]
+                        ]
+                  }
+                , { mapKey = "transform"
+                  , mapValue =
+                      json.array
+                        [ json.object
+                            [ { mapKey = "filter"
+                              , mapValue = json.string "datum.x != null"
+                              }
+                            ]
+                        ]
+                  }
+                ]
+            , json.object
+                [ { mapKey = "layer"
+                  , mapValue =
+                      json.array
+                        [ json.object
+                            [ { mapKey = "encoding"
+                              , mapValue =
+                                  json.object
+                                    [ { mapKey = "color"
+                                      , mapValue =
+                                          json.object
+                                            [ { mapKey = "field"
+                                              , mapValue = json.string "group"
+                                              }
+                                            , { mapKey = "type"
+                                              , mapValue = json.string "nominal"
+                                              }
+                                            ]
+                                      }
+                                    , { mapKey = "x"
                                       , mapValue =
                                           json.object
                                             [ { mapKey = "field"
@@ -161,7 +320,7 @@
                             [ { mapKey = "filter"
                               , mapValue =
                                   json.string
-                                    "datum.x % data('data')[0].frequency === 0 || (datum.x + 1) % data('data')[0].frequency === 0"
+                                    "datum.x != null && (datum.type === 'peak' || datum.type === 'trough')"
                               }
                             ]
                         ]
@@ -169,31 +328,8 @@
                 ]
             ]
       }
-    , { mapKey = "title", mapValue = json.string "Plot of dosing data" }
-    , { mapKey = "transform"
-      , mapValue =
-          json.array
-            [ json.object
-                [ { mapKey = "impute", mapValue = json.string "y" }
-                , { mapKey = "key", mapValue = json.string "x" }
-                , { mapKey = "keyvals"
-                  , mapValue =
-                      json.object
-                        [ { mapKey = "start", mapValue = json.integer +0 }
-                        , { mapKey = "step", mapValue = json.integer +1 }
-                        , { mapKey = "stop", mapValue = json.double 40.1 }
-                        ]
-                  }
-                ]
-            , json.object
-                [ { mapKey = "as", mapValue = json.string "y" }
-                , { mapKey = "calculate"
-                  , mapValue =
-                      json.string
-                        "data('data')[0].dose * exp(-data('data')[0].kel * (datum.x % data('data')[0].frequency)) + floor(datum.x / data('data')[0].frequency) * data('data')[0].dose * exp(-data('data')[0].kel * (data('data')[0].frequency))"
-                  }
-                ]
-            ]
+    , { mapKey = "title"
+      , mapValue = json.string chart_title
       }
     , { mapKey = "width", mapValue = json.string "container" }
     ]

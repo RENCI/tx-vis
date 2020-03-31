@@ -7,7 +7,8 @@ type_mapping_dict = {
     'area_chart': 'api/templates/vega-lite-area-chart.dhall',
     'scatter_plot': 'api/templates/vega-lite-scatter-plot.dhall',
     'multiple_scatter_plot': 'api/templates/vega-lite-multi-scatter-plot.dhall',
-    'histogram': 'api/templates/vega-lite-histogram.dhall'
+    'histogram': 'api/templates/vega-lite-histogram.dhall',
+    'dosing_plot': 'api/templates/vega-lite-dosing.dhall'
 }
 
 config = {
@@ -117,6 +118,26 @@ config = {
     {
         "typeid": "histogram",
         "typeDescription": "histogram visualization type",
+        "legalParameters": [{
+            "type": "string",
+            "name": "x_axis_title"
+        },
+        {
+            "type": "string",
+            "name": "y_axis_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_description"
+        }]
+    },
+    {
+        "typeid": "dosing_plot",
+        "typeDescription": "dosing plot visualization type",
         "legalParameters": [{
             "type": "string",
             "name": "x_axis_title"

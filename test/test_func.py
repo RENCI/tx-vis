@@ -132,6 +132,26 @@ config = {
           "type": "string",
           "name": "chart_description"
         } ]
+    },
+    {
+        "typeid": "dosing_plot",
+        "typeDescription": "dosing plot visualization type",
+        "legalParameters": [{
+            "type": "string",
+            "name": "x_axis_title"
+        },
+        {
+            "type": "string",
+            "name": "y_axis_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_title"
+        },
+        {
+          "type": "string",
+          "name": "chart_description"
+        }]
     } ]
 }
 
