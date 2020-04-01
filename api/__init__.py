@@ -178,7 +178,13 @@ def get_vega_spec_util(type="line_chart", x_axis_title="x axis", y_axis_title="y
         if stderr:
             raise RuntimeError(stderr)
 
-        return stdout
+        # convert returned bytes to str
+        spec = stdout.decode("utf-8")
+        if type == "dosing_plot":
+            spec = spec.replace("guidance", "'guidance'")
+            spec = spec.replace("peak", "'peak'")
+            spec = spec.replace("trough", "'trough'")
+        return spec
 
     raise FileNotFoundError("Cannot read dhall configuration template file")
 
@@ -195,7 +201,5 @@ def get_vega_spec(body):
     desc = body['chart_description'] if 'chart_description' in body else 'Time-series line chart'
     vis_spec = get_vega_spec_util(type=type_id, x_axis_title=x_axis_title,
                                   y_axis_title=y_axis_title, title=title, desc=desc)
-    # convert returned bytes to str
-    vis_spec = vis_spec.decode("utf-8")
 
     return json.loads(vis_spec)
