@@ -172,19 +172,14 @@ def get_vega_spec_util(type="line_chart", x_axis_title="x axis", y_axis_title="y
                      y_axis_title + '" let chart_title="' + title + \
                      '" let chart_desc="' + desc + '" in '
         data = '{} {}'.format(let_string, template_data)
-        cmd = "echo '" + data + "' | dhall-to-json"
-        proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = proc.communicate()
+        cmd = "dhall-to-json"
+        proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE,
+                                text=True, encoding="UTF-8")
+        stdout, stderr = proc.communicate(input=data)
         if stderr:
             raise RuntimeError(stderr)
 
-        # convert returned bytes to str
-        spec = stdout.decode("utf-8")
-        if type == "dosing_plot":
-            spec = spec.replace("guidance", "'guidance'")
-            spec = spec.replace("peak", "'peak'")
-            spec = spec.replace("trough", "'trough'")
-        return spec
+        return stdout
 
     raise FileNotFoundError("Cannot read dhall configuration template file")
 
