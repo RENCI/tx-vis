@@ -176,6 +176,7 @@ vega_spec_output = {
         "x": {
             "field": "x",
             "type": "quantitative",
+            "timeUnit": "",
             "axis": { "title": "Time" }
         },
         "y": {
