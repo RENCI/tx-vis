@@ -124,8 +124,9 @@
                                               }
                                             , { mapKey = "type"
                                               , mapValue =
-                                                  json.string "quantitative"
+                                                  json.string x_axis_type
                                               }
+                                            , { mapKey = "timeUnit", mapValue = json.string time_unit }
                                             ]
                                       }
                                     , { mapKey = "y"

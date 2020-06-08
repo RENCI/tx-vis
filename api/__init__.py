@@ -159,7 +159,7 @@ config = {
 
 
 def get_vega_spec_util(type="line_chart", x_axis_title="x axis", y_axis_title="y axis",
-                       title="Line chart", desc="Time-series line chart"):
+                       title="Line chart", desc="Time-series line chart", time_unit=''):
 
     if type in type_mapping_dict:
         template_fn = type_mapping_dict[type]
@@ -168,9 +168,15 @@ def get_vega_spec_util(type="line_chart", x_axis_title="x axis", y_axis_title="y
 
     with open(template_fn, 'r') as fp:
         template_data = fp.read().replace('\n', '')
-        let_string = 'let x_axis_title="' + x_axis_title + '" let y_axis_title="' + \
-                     y_axis_title + '" let chart_title="' + title + \
-                     '" let chart_desc="' + desc + '" in '
+        if time_unit:
+            let_string = 'let x_axis_title="' + x_axis_title + '" let y_axis_title="' + \
+                         y_axis_title + '" let chart_title="' + title + \
+                         '" let chart_desc="' + desc + '" let time_unit="' + time_unit + \
+                         '" let x_axis_type="temporal" in '
+        else:
+            let_string = 'let x_axis_title="' + x_axis_title + '" let y_axis_title="' + \
+                         y_axis_title + '" let chart_title="' + title + \
+                         '" let chart_desc="' + desc + '" let time_unit="" let x_axis_type="quantitative" in '
         data = '{} {}'.format(let_string, template_data)
         cmd = "dhall-to-json"
         proc = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, stdin=subprocess.PIPE,
@@ -194,7 +200,8 @@ def get_vega_spec(body):
     y_axis_title = body['y_axis_title'] if 'y_axis_title' in body else 'y axis'
     title = body['chart_title'] if 'chart_title' in body else 'Line chart'
     desc = body['chart_description'] if 'chart_description' in body else 'Time-series line chart'
+    time_unit = body['time_unit'] if 'time_unit' in body else ''
     vis_spec = get_vega_spec_util(type=type_id, x_axis_title=x_axis_title,
-                                  y_axis_title=y_axis_title, title=title, desc=desc)
+                                  y_axis_title=y_axis_title, title=title, desc=desc, time_unit=time_unit)
 
     return json.loads(vis_spec)

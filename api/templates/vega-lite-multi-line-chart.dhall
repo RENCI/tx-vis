@@ -46,7 +46,8 @@
                             ]
                       }
                     , { mapKey = "field", mapValue = json.string "x" }
-                    , { mapKey = "type", mapValue = json.string "quantitative" }
+                    , { mapKey = "type", mapValue = json.string x_axis_type }
+                    , { mapKey = "timeUnit", mapValue = json.string time_unit }
                     ]
               }
             , { mapKey = "y"
